@@ -119,6 +119,11 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
+    public static int kActuatorControllerPort = 1;
+
+    //Deadbands
+    public static final double kDriverRTriggerDeadband = .2;
+    public static final double kDriverLTriggerDeadband = .2;
   }
 
   public static final class AutoConstants {
@@ -138,5 +143,30 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+
+  public static final class ShooterConstants {
+    public static final int kLowerShooterID = 20;
+    public static final int kUpperShooterID = 21;
+    public static double kDefaultLaunchPower = .9;
+    public static double kDefaultIntakePower = -.5;
+  }
+
+  public static final class IntakeConstants {
+    public static final int kRollerID = 30;
+    public static double kDefaultIntakePower = .7;
+    public static double kDefaultOuttakePower = -.7;
+    public static double kSlowIntakePower = .2;
+    public static double kSlowOuttakePower = -.2;
+  }
+
+  public static final class ClimberConstants {
+
+    public static int kLeftClimberID = 40;
+    public static int kRightClimberID = 41;
+    public static double kP = .01;
+    public static double kLowerSpeed = -.9;
+    public static double kClimbHeight = 500;
   }
 }

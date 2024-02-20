@@ -192,4 +192,10 @@ public final class Constants {
     public static final int kShoulderForwardChannelPort = 2;
     public static final int kShoulderReverseChannelPort = 3;
   }
+
+  public static final class IndexerConstants {
+    public static final int kIndexerID = 22;
+    public static final double kForwardSpeed = 0.9;
+    public static final double kBackwardSpeed = -0.9;
+  }
 }

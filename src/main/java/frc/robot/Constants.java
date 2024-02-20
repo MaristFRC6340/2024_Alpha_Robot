@@ -169,4 +169,27 @@ public final class Constants {
     public static double kLowerSpeed = -.9;
     public static double kClimbHeight = 500;
   }
+
+  public static final class ExtenderConstants {
+    public static final int kExtenderID = 50;
+    public static double kSourceIntake;
+    public static double kAmpOuttake;
+    public static double kTrapOuttake;
+    public static double kP;
+  }
+
+  public static final class JawConstants {
+    public static final int kUpperMandibleID = 51;
+    public static final int kLowerMandibleID = 52;
+    public static double kRotationOffset = .85;
+    public static double kIntakePower = .8;
+    public static double kOuttakePower = -.5;
+  }
+
+  public static final class PneumaticsConstants {
+    public static final int kBassForwardChannelPort = 0;
+    public static final int kBassReverseChannelPort = 1;
+    public static final int kShoulderForwardChannelPort = 2;
+    public static final int kShoulderReverseChannelPort = 3;
+  }
 }

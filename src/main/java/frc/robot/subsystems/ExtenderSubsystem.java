@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -11,6 +13,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import frc.robot.Constants.ExtenderConstants;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ExtenderSubsystem extends SubsystemBase {
@@ -50,5 +53,93 @@ public class ExtenderSubsystem extends SubsystemBase {
     armExtender.set(0);
   }
 
-  public void goToPosition()
+  public void goToPosition(double position) {
+    extenderPID.setReference(position, CANSparkMax.ControlType.kPosition);
+  }
+
+  public void goToSourceIntake() {
+    goToPosition(ExtenderConstants.kSourceIntake);
+  }
+
+  public void goToAmpOuttake() {
+    goToPosition(ExtenderConstants.kAmpOuttake);
+  }
+
+  public void goToTrapOuttake() {
+    goToPosition(ExtenderConstants.kTrapOuttake);
+  }
+
+  public void reset() {
+    goToPosition(0);
+  }
+
+  public double getPosition() {
+    return encoder.getPosition();
+  }
+
+
+  //Commands
+
+  public Command getSetExtenderPowerCommand(double power) {
+    return this.startEnd(() -> {
+      setExtenderPower(power);
+    }, () -> {
+      stop();
+    });
+  }
+
+  public Command getSetExtenderPowerCommand(DoubleSupplier powerSupplier) {
+    return this.startEnd(() -> {
+      setExtenderPower(powerSupplier.getAsDouble());
+    }, () -> {
+      stop();
+    });
+  }
+
+  public Command getGoToPositionCommand(double position) {
+    return this.startEnd(() -> {
+      goToPosition(position);
+    }, () -> {
+      stop();
+    });
+  }
+
+  public Command getGoToPositionCommand(DoubleSupplier positionSupplier) {
+    return this.startEnd(() -> {
+      goToPosition(positionSupplier.getAsDouble());
+    }, () -> {
+      stop();
+    });
+  }
+
+  public Command getExtendToSourceCommand() {
+    return this.startEnd(() -> {
+      goToSourceIntake();
+    }, () -> {
+      stop();
+    });
+  }
+
+  public Command getExtendToAmpCommand() {
+    return this.startEnd(() -> {
+      goToAmpOuttake();
+    }, () -> {
+      stop();
+    });
+  }
+
+  public Command getExtendToTrapCommand() {
+    return this.startEnd(() -> {
+      goToTrapOuttake();
+    }, () -> {
+      stop();
+    });
+  }
+
+  //Default Command
+  public Command getHoldPositionCommand() {
+    return this.run(() -> {
+      goToPosition(getPosition());
+    });
+  }
 }

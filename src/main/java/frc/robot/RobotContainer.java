@@ -15,14 +15,21 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
+import frc.robot.Commands.LaunchNoteCommand;
+import frc.robot.Commands.PneumaticsCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PneumaticsSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -40,6 +47,13 @@ public class RobotContainer {
   //private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
 
+  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
+
+  private final IndexerSubsystem m_IndexerSubsystem = new IndexerSubsystem();
+
+  private final PneumaticsSubsystem m_PneumaticsSubsystem = new PneumaticsSubsystem();
+
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -54,8 +68,17 @@ public class RobotContainer {
   Trigger driverY = new JoystickButton(m_driverController, XboxController.Button.kY.value);
   Trigger driverLTrigger = new Trigger(() -> m_driverController.getLeftTriggerAxis()>OIConstants.kDriverLTriggerDeadband);
   Trigger driverRTrigger = new Trigger(() -> m_driverController.getRightTriggerAxis()>OIConstants.kDriverRTriggerDeadband);
+
   Trigger driverLBumper = new JoystickButton(m_actuatorController, XboxController.Button.kLeftBumper.value);
   Trigger driverRBumper = new JoystickButton(m_actuatorController, XboxController.Button.kRightBumper.value);
+
+  Trigger shooterA = new JoystickButton(m_actuatorController, XboxController.Button.kA.value);
+  Trigger shooterB = new JoystickButton(m_actuatorController, XboxController.Button.kB.value);
+  Trigger shooterX = new JoystickButton(m_actuatorController, XboxController.Button.kX.value);
+  Trigger shooterY = new JoystickButton(m_actuatorController, XboxController.Button.kY.value);
+
+  Trigger shooterLBumper = new JoystickButton(m_actuatorController, XboxController.Button.kLeftBumper.value);
+  Trigger shooterRBumper = new JoystickButton(m_actuatorController, XboxController.Button.kRightBumper.value);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -64,7 +87,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    //TODO: Uncomment this
+    // TODO: Uncomment this
     // m_robotDrive.setDefaultCommand(
     //     // The left stick controls translation of the robot.
     //     // Turning is controlled by the X axis of the right stick.
@@ -92,12 +115,25 @@ public class RobotContainer {
     //         () -> m_robotDrive.setX(),
     //         m_robotDrive));
     
+    // Intake
     driverRTrigger.whileTrue(m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_driverController.getRightTriggerAxis()));
     driverLTrigger.whileTrue(m_IntakeSubsystem.getSetIntakePowerCommand(() -> -1 * m_driverController.getLeftTriggerAxis()));
     driverA.whileTrue(m_IntakeSubsystem.getIntakeCommand());
     driverB.whileTrue(m_IntakeSubsystem.getOuttakeCommand());
     driverX.whileTrue(m_IntakeSubsystem.getSlowIntakeCommand());
     driverY.whileTrue(m_IntakeSubsystem.getSlowOuttakeCommand());
+
+    // Shooter
+    shooterA.whileTrue(new SequentialCommandGroup(m_ShooterSubsystem.getPrepareLaunchCommand().withTimeout(2), new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)));
+
+    // Indexer
+    shooterB.whileTrue(m_IndexerSubsystem.getRunForwardCommand());
+    shooterX.whileTrue(m_IndexerSubsystem.getRunBackwardsCommand());
+    
+    shooterY.onTrue(m_PneumaticsSubsystem.getToggleTheBassCommand());
+
+    shooterLBumper.whileTrue(m_PneumaticsSubsystem.getRaiseTheBassCommand());
+    shooterRBumper.whileTrue(m_PneumaticsSubsystem.getDropTheBassCommand());
   }
 
   /**
@@ -146,5 +182,9 @@ public class RobotContainer {
     // // Run path following command, then stop at the end.
     // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
     return null;
+  }
+
+  public Command getPneumaticsCommand() {
+    return new PneumaticsCommand(m_PneumaticsSubsystem);
   }
 }

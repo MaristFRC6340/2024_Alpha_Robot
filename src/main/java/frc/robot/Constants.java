@@ -187,15 +187,18 @@ public final class Constants {
   }
 
   public static final class PneumaticsConstants {
-    public static final int kBassForwardChannelPort = 0;
-    public static final int kBassReverseChannelPort = 1;
+    public static final int kBassForwardChannelPort = 8;
+    public static final int kBassReverseChannelPort = 9;
     public static final int kShoulderForwardChannelPort = 2;
     public static final int kShoulderReverseChannelPort = 3;
   }
 
   public static final class IndexerConstants {
+
+    //TODO: Make sure these CAN ID's are right
     public static final int kIndexerID = 22;
-    public static final double kForwardSpeed = 0.9;
-    public static final double kBackwardSpeed = -0.9;
+    public static final double kForwardSpeed = 0.4;
+    public static final double kBackwardSpeed = -0.4;
+    public static final int kPreIndexerID = 23;
   }
 }

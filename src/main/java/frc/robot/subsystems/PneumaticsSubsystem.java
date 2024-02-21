@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -13,10 +14,14 @@ public class PneumaticsSubsystem extends SubsystemBase {
     private final DoubleSolenoid shoulderSolenoid;
 
     private PneumaticsControlModule m_PneumaticsControlModule;
+
+    private PneumaticHub hub;
     
     public PneumaticsSubsystem() {
-        bassSolenoid = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, PneumaticsConstants.kBassForwardChannelPort, PneumaticsConstants.kBassReverseChannelPort); 
-        shoulderSolenoid = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, PneumaticsConstants.kShoulderForwardChannelPort, PneumaticsConstants.kShoulderReverseChannelPort);       
+        hub = new PneumaticHub(1);
+        m_PneumaticsControlModule = new PneumaticsControlModule(1);
+        bassSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kBassForwardChannelPort, PneumaticsConstants.kBassReverseChannelPort);
+        shoulderSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kShoulderReverseChannelPort, PneumaticsConstants.kShoulderReverseChannelPort);     
     }
 
     //Bass

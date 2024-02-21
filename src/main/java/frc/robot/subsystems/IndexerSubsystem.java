@@ -12,9 +12,13 @@ import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
 
 public class IndexerSubsystem extends SubsystemBase {
+    private CANSparkMax preIndexerMotor;
     private CANSparkMax indexerMotor;
-
     public IndexerSubsystem() {
+        preIndexerMotor = new CANSparkMax(IndexerConstants.kPreIndexerID, MotorType.kBrushed);
+        preIndexerMotor.setSmartCurrentLimit(40);
+        preIndexerMotor.setIdleMode(IdleMode.kBrake);
+
         indexerMotor = new CANSparkMax(IndexerConstants.kIndexerID, MotorType.kBrushed);
         indexerMotor.setSmartCurrentLimit(40);
         indexerMotor.setIdleMode(IdleMode.kBrake);
@@ -25,15 +29,19 @@ public class IndexerSubsystem extends SubsystemBase {
      */
     public void runForwards() {
         indexerMotor.set(IndexerConstants.kForwardSpeed);
+        preIndexerMotor.set(-IndexerConstants.kForwardSpeed);
     }
     public void runBackwards() {
         indexerMotor.set(IndexerConstants.kBackwardSpeed);
+        preIndexerMotor.set(-IndexerConstants.kBackwardSpeed);
     }
     public void stop() {
         indexerMotor.set(0);
+        preIndexerMotor.set(0);
     }
     public void setPower(double speed) {
         indexerMotor.set(speed);
+        preIndexerMotor.set(speed);
     }
 
     public Command getSetPowerCommand(double power) {

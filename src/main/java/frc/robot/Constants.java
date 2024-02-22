@@ -63,6 +63,7 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 16;
 
     public static final boolean kGyroReversed = false;
+    public static double kSpeedControl = .8;
   }
 
   public static final class ModuleConstants {
@@ -112,7 +113,7 @@ public final class Constants {
     public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-    public static final int kDrivingMotorCurrentLimit = 50; // amps
+    public static final int kDrivingMotorCurrentLimit = 40; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
 
@@ -151,6 +152,8 @@ public final class Constants {
     public static final int kUpperShooterID = 21;
     public static double kDefaultLaunchPower = .9;
     public static double kDefaultIntakePower = -.5;
+    public static double prepareLaunchDelay = 1;
+    public static double shootToRestDelay = 1;
   }
 
   public static final class IntakeConstants {

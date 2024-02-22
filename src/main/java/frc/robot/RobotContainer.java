@@ -14,8 +14,13 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Commands.HighLaunchNoteCommand;
 import frc.robot.Commands.LaunchNoteCommand;
+import frc.robot.Commands.LowLaunchNoteCommand;
 import frc.robot.Commands.PneumaticsCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -35,6 +40,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.List;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -56,9 +67,9 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   //The actuator's controller
-  XboxController m_actuatorController = new XboxController(OIConstants.kActuatorControllerPort);
+  static XboxController m_actuatorController = new XboxController(OIConstants.kActuatorControllerPort);
 
   //Create Triggers for bindings
 
@@ -79,25 +90,35 @@ public class RobotContainer {
 
   Trigger shooterLBumper = new JoystickButton(m_actuatorController, XboxController.Button.kLeftBumper.value);
   Trigger shooterRBumper = new JoystickButton(m_actuatorController, XboxController.Button.kRightBumper.value);
+  SendableChooser<Command> autoChooser;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    //Register Named Commands
+    NamedCommands.registerCommand("HighLaunchNote", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
+    NamedCommands.registerCommand("LowLaunchNote", new LowLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
+
+    autoChooser = AutoBuilder.buildAutoChooser("default");
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+     
+
     // Configure the button bindings
     configureButtonBindings();
 
     // Configure default commands
     // TODO: Uncomment this
-    // m_robotDrive.setDefaultCommand(
-    //     // The left stick controls translation of the robot.
-    //     // Turning is controlled by the X axis of the right stick.
-    //     new RunCommand(
-    //         () -> m_robotDrive.drive(
-    //             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-    //             -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-    //             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-    //             true, true),
-    //         m_robotDrive));
+    m_robotDrive.setDefaultCommand(
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the X axis of the right stick.
+        new RunCommand(
+            () -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                false, true),
+            m_robotDrive));
   }
 
   /**
@@ -186,5 +207,9 @@ public class RobotContainer {
 
   public Command getPneumaticsCommand() {
     return new PneumaticsCommand(m_PneumaticsSubsystem);
+  }
+
+  public static XboxController getDriveControlJoystick() {
+    return m_driverController;
   }
 }

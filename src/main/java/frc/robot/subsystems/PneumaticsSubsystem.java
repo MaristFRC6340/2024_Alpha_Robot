@@ -21,7 +21,7 @@ public class PneumaticsSubsystem extends SubsystemBase {
         hub = new PneumaticHub(1);
         m_PneumaticsControlModule = new PneumaticsControlModule(1);
         bassSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kBassForwardChannelPort, PneumaticsConstants.kBassReverseChannelPort);
-        shoulderSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kShoulderReverseChannelPort, PneumaticsConstants.kShoulderReverseChannelPort);     
+        shoulderSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kShoulderForwardChannelPort, PneumaticsConstants.kShoulderReverseChannelPort);     
     }
 
     //Bass
@@ -86,6 +86,12 @@ public class PneumaticsSubsystem extends SubsystemBase {
         return this.runOnce(() -> {
             toggleShoulder();
         });
+    }
+
+    
+
+    public boolean getShoulderRaised() {
+        return shoulderSolenoid.get().equals(DoubleSolenoid.Value.kForward);
     }
 
     @Override

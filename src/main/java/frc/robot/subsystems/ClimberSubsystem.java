@@ -57,8 +57,10 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param power
    */
   public void setClimberPower(double power) {
-    leftClimber.set(power);
+    leftClimber.set(-power);
     rightClimber.set(power);
+    System.out.println("Left Encoder: " + this.getLeftEncoderCounts());
+    System.out.println("Right Encoder: " + this.getRightEncoderCounts());
   }
 
   /**

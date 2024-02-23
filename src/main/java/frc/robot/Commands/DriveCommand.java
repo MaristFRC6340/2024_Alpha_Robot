@@ -1,5 +1,7 @@
 package frc.robot.Commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,13 +18,31 @@ public class DriveCommand extends Command{
     private SlewRateLimiter filterX = new SlewRateLimiter(rateLimit);
     private SlewRateLimiter filterY = new SlewRateLimiter(rateLimit);
 
+    DoubleSupplier getLeftX;
+    DoubleSupplier getLeftY;
+    DoubleSupplier getRightX;
+
     private double kP = .025;
 
     double turnPower = 0;
 
     private boolean fieldCentric = true;
 
-    public DriveCommand(DriveSubsystem drive) {
+    public DriveCommand(DriveSubsystem drive, DoubleSupplier getLeftX, DoubleSupplier getLeftY, DoubleSupplier getRightX) {
+        this.getLeftX = getLeftX;
+        this.getLeftY = getLeftY;
+        this.getRightX = getRightX;
+
+        m_robotDrive = drive;
+        addRequirements(drive);
+    }
+
+    public DriveCommand(DriveSubsystem drive, DoubleSupplier getLeftX, DoubleSupplier getLeftY, DoubleSupplier getRightX, double speedControl) {
+        this.getLeftX = getLeftX;
+        this.getLeftY = getLeftY;
+        this.getRightX = getRightX;
+        
+        this.speedControl = speedControl;
         m_robotDrive = drive;
         addRequirements(drive);
     }
@@ -34,15 +54,19 @@ public class DriveCommand extends Command{
     @Override
     public void execute() {
 
-        leftX = Robot.getDriveControllerJoystick().getRawAxis(0);
-        leftY = Robot.getDriveControllerJoystick().getRawAxis(1);
-        rightX = Robot.getDriveControllerJoystick().getRawAxis(4);
+        leftX = getLeftX.getAsDouble();
+        leftY = getLeftY.getAsDouble();
+        rightX = getRightX.getAsDouble();
 
         m_robotDrive.drive(
             MathUtil.applyDeadband(-leftY*speedControl, .06),
             MathUtil.applyDeadband(-leftX*speedControl, .06), 
             MathUtil.applyDeadband(-rightX*speedControl, .06), fieldCentric, true);
+    }
 
-            
+
+    @Override
+    public void end(boolean interrupted) {
+        m_robotDrive.drive(0, 0, 0, false, false);
     }
 }

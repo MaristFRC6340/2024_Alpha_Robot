@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -63,7 +65,7 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 16;
 
     public static final boolean kGyroReversed = false;
-    public static double kSpeedControl = .8;
+    public static double kSpeedControl = .4;
   }
 
   public static final class ModuleConstants {
@@ -150,7 +152,7 @@ public final class Constants {
   public static final class ShooterConstants {
     public static final int kLowerShooterID = 20;
     public static final int kUpperShooterID = 21;
-    public static double kDefaultLaunchPower = .9;
+    public static double kDefaultLaunchPower = .7; // WOrks from safe zone
     public static double kDefaultIntakePower = -.5;
     public static double prepareLaunchDelay = 1;
     public static double shootToRestDelay = 1;
@@ -192,8 +194,8 @@ public final class Constants {
   public static final class PneumaticsConstants {
     public static final int kBassForwardChannelPort = 8;
     public static final int kBassReverseChannelPort = 9;
-    public static final int kShoulderForwardChannelPort = 2;
-    public static final int kShoulderReverseChannelPort = 3;
+    public static final int kShoulderForwardChannelPort = 10;
+    public static final int kShoulderReverseChannelPort = 11;
   }
 
   public static final class IndexerConstants {
@@ -203,5 +205,17 @@ public final class Constants {
     public static final double kForwardSpeed = 0.4;
     public static final double kBackwardSpeed = -0.4;
     public static final int kPreIndexerID = 23;
+    public static double kSlowBackwardsSpeed = -.2;
+  }
+
+  public static final class LimelightConstants {
+    public static final double kPX = .05;
+    public static final double kPY = .05;
+
+    public static final double speakerAimTXRaised = 0;
+    public static final double speakerAimTYRaised = 0;
+    public static final double speakerAimTXLowered = 0;
+    public static final double speakerAimTYLowered = 0;
+    public static double kTolerance = .2;
   }
 }

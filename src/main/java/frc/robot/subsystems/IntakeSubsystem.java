@@ -25,6 +25,10 @@ public class IntakeSubsystem extends SubsystemBase {
     roller.setIdleMode(IdleMode.kBrake);
   }
 
+  public IntakeSubsystem(IndexerSubsystem m_IndexerSubsystem) {
+    //TODO Auto-generated constructor stub
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

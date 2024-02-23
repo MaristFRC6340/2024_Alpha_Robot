@@ -41,7 +41,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
     public void setPower(double speed) {
         indexerMotor.set(speed);
-        preIndexerMotor.set(speed);
+        preIndexerMotor.set(-speed);
     }
 
     public Command getSetPowerCommand(double power) {
@@ -82,4 +82,11 @@ public class IndexerSubsystem extends SubsystemBase {
         });
     }
 
+    public Command getIntakeFromSourceCommand() {
+        return this.startEnd(() -> {
+            indexerMotor.set(IndexerConstants.kBackwardSpeed);
+        }, () -> {
+            stop();
+        });
+    }
 }

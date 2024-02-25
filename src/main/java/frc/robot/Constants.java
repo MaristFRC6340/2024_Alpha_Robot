@@ -153,7 +153,7 @@ public final class Constants {
     public static final int kLowerShooterID = 20;
     public static final int kUpperShooterID = 21;
     public static double kDefaultLaunchPower = .7; // WOrks from safe zone
-    public static double kDefaultIntakePower = -.5;
+    public static double kDefaultIntakePower = -.1;
     public static double prepareLaunchDelay = 1;
     public static double shootToRestDelay = 1;
   }
@@ -209,13 +209,15 @@ public final class Constants {
   }
 
   public static final class LimelightConstants {
-    public static final double kPX = .05;
-    public static final double kPY = .05;
+    public static final double kPX = .03;
+    public static final double kPY = .03;
 
-    public static final double speakerAimTXRaised = 0;
-    public static final double speakerAimTYRaised = 0;
-    public static final double speakerAimTXLowered = 0;
-    public static final double speakerAimTYLowered = 0;
-    public static double kTolerance = .2;
+    public static final double speakerAimTXClose = 1.69;
+    public static final double speakerAimTYClose = -2.07;
+    public static final double speakerAimTXFar = 0;
+    public static final double speakerAimTYFar = -21;
+    public static double kTolerance = 2;
+
+    public static final double kPRot = .1;
   }
 }

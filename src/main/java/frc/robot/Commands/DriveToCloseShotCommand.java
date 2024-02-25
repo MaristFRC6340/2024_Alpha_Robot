@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class DriveToSpeakerCommand extends Command{
+public class DriveToCloseShotCommand extends Command{
     private NetworkTable limTable;
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
@@ -17,8 +17,7 @@ public class DriveToSpeakerCommand extends Command{
 
     private DriveSubsystem m_DriveSubsystem;
     
-    BooleanSupplier getIsRaised;
-    public DriveToSpeakerCommand(DriveSubsystem drive, BooleanSupplier getIsRaised) {
+    public DriveToCloseShotCommand(DriveSubsystem drive) {
         m_DriveSubsystem = drive;
         addRequirements(m_DriveSubsystem);
 
@@ -27,7 +26,6 @@ public class DriveToSpeakerCommand extends Command{
         tx = limTable.getEntry("tx");
         ty = limTable.getEntry("ty");
 
-        this.getIsRaised = getIsRaised;
     }
 
     @Override
@@ -39,49 +37,28 @@ public class DriveToSpeakerCommand extends Command{
 
     double xError;
     double yError;
+    double rotError;
     @Override
     public void execute() {
-        if(getIsRaised.getAsBoolean())
-        {
+        rotError = -m_DriveSubsystem.getPose().getRotation().getRadians();
             if(tx.exists()&& ty.exists()) {
-                xError = (tx.getDouble(0)-LimelightConstants.speakerAimTXRaised);
-                yError = LimelightConstants.speakerAimTYRaised - ty.getDouble(0);
+                xError = (tx.getDouble(0)-LimelightConstants.speakerAimTXClose);
+                yError = LimelightConstants.speakerAimTYClose - ty.getDouble(0);
                 m_DriveSubsystem.drive(
-                    -1*yError*LimelightConstants.kPY, 
-                    xError*LimelightConstants.kPX, 
+                    yError*LimelightConstants.kPY, 
+                    -1*xError*LimelightConstants.kPX, 
                     0, 
                     false, 
                     false);
             }
             else {
                 m_DriveSubsystem.drive(
-                    -1*yError*LimelightConstants.kPY, 
-                    xError*LimelightConstants.kPX, 
+                    yError*LimelightConstants.kPY, 
+                    -1*xError*LimelightConstants.kPX, 
                     0, 
                     false, 
                     false);
             }
-        }
-        else {
-            if(tx.exists()&& ty.exists()) {
-                xError = (tx.getDouble(0)-LimelightConstants.speakerAimTXLowered);
-                yError = LimelightConstants.speakerAimTYLowered - ty.getDouble(0);
-                m_DriveSubsystem.drive(
-                    -1*yError*LimelightConstants.kPY, 
-                    xError*LimelightConstants.kPX, 
-                    0, 
-                    false, 
-                    false);
-            }
-            else {
-                m_DriveSubsystem.drive(
-                    -1*yError*LimelightConstants.kPY, 
-                    xError*LimelightConstants.kPX, 
-                    0, 
-                    false, 
-                    false);
-            }
-        }
     }
 
     @Override
@@ -93,7 +70,7 @@ public class DriveToSpeakerCommand extends Command{
 
     @Override
     public boolean isFinished() {
-        if(Math.abs(xError)<LimelightConstants.kTolerance && Math.abs(yError) < LimelightConstants.kTolerance) {
+        if(Math.abs(tx.getDouble(0)-LimelightConstants.speakerAimTXClose)<LimelightConstants.kTolerance && Math.abs(LimelightConstants.speakerAimTYClose - ty.getDouble(0)) < LimelightConstants.kTolerance) {
             return true;
         }
         return false;

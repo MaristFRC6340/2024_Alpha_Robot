@@ -155,4 +155,22 @@ public class IntakeSubsystem extends SubsystemBase {
       stop();
     });
   }
+
+  public Command getStartIntakeCommand() {
+    return this.runOnce(() -> {
+      intake();
+    });
+  }
+
+  public Command getStartSlowIntakeCommand() {
+    return this.runOnce(() -> {
+      slowIntake();
+    });
+  }
+
+  public Command getStopIntakeCommand() {
+    return this.runOnce(() -> {
+      stop();
+    });
+  }
 }

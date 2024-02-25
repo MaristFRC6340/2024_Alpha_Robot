@@ -89,4 +89,20 @@ public class IndexerSubsystem extends SubsystemBase {
             stop();
         });
     }
+
+    public Command getSourceIntakeCommand() {
+        return this.startEnd(() -> {
+            indexerMotor.set(-.2);
+        }, () -> {
+            this.stop();
+        });
+    }
+
+    public Command getGroundIntakeCommand() {
+        return this.startEnd(() -> {
+            preIndexerMotor.set(.4);
+        }, () -> {
+            this.stop();
+        });
+    }
 }

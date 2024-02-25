@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Commands.DriveCommand;
+import frc.robot.Commands.DriveToCloseShotCommand;
+import frc.robot.Commands.DriveToFarShotCommand;
+import frc.robot.Commands.DriveToSourceCommand;
 import frc.robot.Commands.HighLaunchNoteCommand;
 import frc.robot.Commands.LaunchNoteCommand;
 import frc.robot.Commands.LowLaunchNoteCommand;
@@ -36,9 +39,12 @@ import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -95,7 +101,7 @@ public class RobotContainer {
   Trigger actuatorRBumper = new JoystickButton(m_actuatorController, XboxController.Button.kRightBumper.value);
   Trigger actuatorLTrigger = new Trigger(() -> m_actuatorController.getLeftTriggerAxis()>OIConstants.kDriverLTriggerDeadband);
   Trigger actuatorRTrigger = new Trigger(() -> m_actuatorController.getRightTriggerAxis()>OIConstants.kDriverRTriggerDeadband);
-
+  Trigger driverDpad = new Trigger(()->m_driverController.getPOV()!=-1);
   SendableChooser<Command> autoChooser;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -105,10 +111,25 @@ public class RobotContainer {
     //Register Named Commands
     NamedCommands.registerCommand("HighLaunchNote", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
     NamedCommands.registerCommand("LowLaunchNote", new LowLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
+    NamedCommands.registerCommand("StartShooter", m_ShooterSubsystem.getPrepareLaunchCommand());
+    NamedCommands.registerCommand("StopShooter", m_ShooterSubsystem.getStopShooterCommand());
+    NamedCommands.registerCommand("ForwardIndexer", m_IndexerSubsystem.getRunForwardCommand());
+    NamedCommands.registerCommand("StopIndexer", m_IndexerSubsystem.getStopCommand());
 
+    NamedCommands.registerCommand("LaunchNote", new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem).withTimeout(.4));
     //idk what i'm doing - James 
-    NamedCommands.registerCommand("Intake", m_IndexerSubsystem.getRunForwardCommand());
-    NamedCommands.registerCommand("Outtake", m_IndexerSubsystem.getRunBackwardsCommand());
+    NamedCommands.registerCommand("StartGroundIntake", new ParallelCommandGroup(m_IndexerSubsystem.getGroundIntakeCommand(), m_IntakeSubsystem.getIntakeCommand()));
+    NamedCommands.registerCommand("BackwardsIndexer", m_IndexerSubsystem.getRunBackwardsCommand());
+    NamedCommands.registerCommand("RunIntake", m_IntakeSubsystem.getIntakeCommand());
+    NamedCommands.registerCommand("RunOuttake", m_IntakeSubsystem.getOuttakeCommand());
+    NamedCommands.registerCommand("RaiseTheBass", m_PneumaticsSubsystem.getRaiseTheBassCommand().withTimeout(.5));
+    NamedCommands.registerCommand("DropTheBass", m_PneumaticsSubsystem.getDropTheBassCommand().withTimeout(.5));
+    NamedCommands.registerCommand("RaiseShoulder", m_PneumaticsSubsystem.getRaiseShoulderCommand().withTimeout(.5));
+    NamedCommands.registerCommand("DropShoulder", m_PneumaticsSubsystem.getDropShoulderCommand().withTimeout(.5));
+
+    NamedCommands.registerCommand("StartIntake", m_IntakeSubsystem.getStartIntakeCommand());
+    NamedCommands.registerCommand("StartIntakeSlow", m_IntakeSubsystem.getStartSlowIntakeCommand());
+    NamedCommands.registerCommand("StopIntake", m_IntakeSubsystem.getStopIntakeCommand());
     // NamedCommands.registerCommand("IntakeAndShootLow", new IntakeAndShootLowCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem));
     // NamedCommands.registerCommand("IntakeAndShootHigh", new IntakeAndShootHighCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem));
 
@@ -132,9 +153,9 @@ public class RobotContainer {
     //             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
     //             false, true),
     //         m_robotDrive));
-
+    
     m_robotDrive.setDefaultCommand(
-      new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX())
+      new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .7)
     );
     //TODO: Uncomment this when you want to switch 
     //m_robotDrive.setDefaultCommand(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX()));
@@ -178,6 +199,8 @@ public class RobotContainer {
     driverRBumper.onTrue(m_PneumaticsSubsystem.getRaiseShoulderCommand());
     driverLBumper.onTrue(m_PneumaticsSubsystem.getDropShoulderCommand());
 
+
+    
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
       m_IndexerSubsystem.getSetPowerCommand(() -> m_actuatorController.getRightTriggerAxis()),
       m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_actuatorController.getRightTriggerAxis())
@@ -192,8 +215,8 @@ public class RobotContainer {
     actuatorRBumper.onTrue(m_PneumaticsSubsystem.getDropTheBassCommand());
 
     actuatorA.whileTrue(new ParallelCommandGroup(
-      m_ShooterSubsystem.getIntakeSourceCommand()
-      
+      m_ShooterSubsystem.getIntakeSourceCommand(),
+      m_IndexerSubsystem.getSourceIntakeCommand()
     ));
 
     actuatorY.whileTrue(m_ShooterSubsystem.getSetShooterPowerCommand(.7));
@@ -201,8 +224,41 @@ public class RobotContainer {
     actuatorX.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(.5));
     actuatorB.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(-.5));
 
-    driverA.onTrue(m_robotDrive.getResetHeadingCommand(m_driverController.getPOV()));
+    driverDpad.onTrue(m_robotDrive.getResetHeadingCommand(m_driverController.getPOV()));
     
+    //April Tags
+    driverB.whileTrue(new SequentialCommandGroup(
+      m_PneumaticsSubsystem.getRaiseShoulderCommand(),
+      new ParallelDeadlineGroup(
+        new ParallelCommandGroup(
+          new WaitCommand(2),
+          new DriveToCloseShotCommand(m_robotDrive)
+        ), 
+        m_ShooterSubsystem.getPrepareLaunchCommand()),
+        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+
+    driverY.whileTrue(new SequentialCommandGroup(
+      m_PneumaticsSubsystem.getDropShoulderCommand(),
+      new ParallelDeadlineGroup(
+        new ParallelCommandGroup(
+          new WaitCommand(2),
+          new DriveToFarShotCommand(m_robotDrive)
+        ), 
+        m_ShooterSubsystem.getPrepareLaunchCommand()),
+        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+
+    driverX.whileTrue(new SequentialCommandGroup(
+      m_PneumaticsSubsystem.getRaiseShoulderCommand(),
+      new ParallelRaceGroup(
+        new DriveToSourceCommand(m_robotDrive),
+        m_ShooterSubsystem.getIntakeSourceCommand()
+      ),
+      new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
+    ).handleInterrupt(() -> {
+      m_ShooterSubsystem.stop();
+    }));
+
+    driverRBumper.whileTrue(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .3));
     //actuatorB.whileTrue(m_JawSubsystem.getIntakeNoteCommand()) TODO: Uncomment when jaw is on
   }
 
@@ -213,25 +269,25 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.kDriveKinematics);
+    // TrajectoryConfig config = new TrajectoryConfig(
+    //     AutoConstants.kMaxSpeedMetersPerSecond,
+    //     AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+    //     // Add kinematics to ensure max speed is actually obeyed
+    //     .setKinematics(DriveConstants.kDriveKinematics);
 
     // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        config);
+    // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+    //     // Start at the origin facing the +X direction
+    //     new Pose2d(0, 0, new Rotation2d(0)),
+    //     // Pass through these two interior waypoints, making an 's' curve path
+    //     List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+    //     // End 3 meters straight ahead of where we started, facing forward
+    //     new Pose2d(3, 0, new Rotation2d(0)),
+    //     config);
 
-    var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    // var thetaController = new ProfiledPIDController(
+    //     AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     //TODO: Uncomment this
     // SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
@@ -251,7 +307,7 @@ public class RobotContainer {
 
     // // Run path following command, then stop at the end.
     // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-    return null;
+    return autoChooser.getSelected();
   }
 
   public Command getPneumaticsCommand() {

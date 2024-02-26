@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PneumaticsConstants;
 public class PneumaticsSubsystem extends SubsystemBase {
     
-    private final DoubleSolenoid bassSolenoid;
     private final DoubleSolenoid shoulderSolenoid;
 
     private PneumaticsControlModule m_PneumaticsControlModule;
@@ -20,41 +19,9 @@ public class PneumaticsSubsystem extends SubsystemBase {
     public PneumaticsSubsystem() {
         hub = new PneumaticHub(1);
         m_PneumaticsControlModule = new PneumaticsControlModule(1);
-        bassSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kBassForwardChannelPort, PneumaticsConstants.kBassReverseChannelPort);
         shoulderSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kShoulderForwardChannelPort, PneumaticsConstants.kShoulderReverseChannelPort);     
     }
 
-    //Bass
-    
-    public void toggleBass() {
-        bassSolenoid.toggle();
-    }
-
-    public void dropBass() {
-        bassSolenoid.set(DoubleSolenoid.Value.kReverse);
-    }
-
-    public void raiseBass() {
-        bassSolenoid.set(DoubleSolenoid.Value.kForward);
-    }
-
-    public Command getDropTheBassCommand() {
-        return this.runOnce(() -> {
-            dropBass();
-        });
-    }
-
-    public Command getRaiseTheBassCommand() {
-        return this.runOnce(() -> {
-            raiseBass();
-        });
-    }
-
-    public Command getToggleTheBassCommand() {
-        return this.runOnce(() -> {
-            toggleBass();
-        });
-    }
 
     //Shoulder
 

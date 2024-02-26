@@ -25,7 +25,6 @@ import frc.robot.Commands.DriveToSourceCommand;
 import frc.robot.Commands.HighLaunchNoteCommand;
 import frc.robot.Commands.LaunchNoteCommand;
 import frc.robot.Commands.LowLaunchNoteCommand;
-import frc.robot.Commands.PneumaticsCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
@@ -36,6 +35,7 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TheBassSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -76,6 +76,8 @@ public class RobotContainer {
   private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+
+  private final TheBassSubsystem m_TheBassSubsystem = new TheBassSubsystem();
 
   // The driver's controller
   static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -122,8 +124,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("BackwardsIndexer", m_IndexerSubsystem.getRunBackwardsCommand());
     NamedCommands.registerCommand("RunIntake", m_IntakeSubsystem.getIntakeCommand());
     NamedCommands.registerCommand("RunOuttake", m_IntakeSubsystem.getOuttakeCommand());
-    NamedCommands.registerCommand("RaiseTheBass", m_PneumaticsSubsystem.getRaiseTheBassCommand().withTimeout(.5));
-    NamedCommands.registerCommand("DropTheBass", m_PneumaticsSubsystem.getDropTheBassCommand().withTimeout(.5));
+    NamedCommands.registerCommand("RaiseTheBass", m_TheBassSubsystem.getGoToAmpOuttakeCommand().withTimeout(.5));
+    NamedCommands.registerCommand("DropTheBass", m_TheBassSubsystem.getDropTheBassCommand().withTimeout(.5));
     NamedCommands.registerCommand("RaiseShoulder", m_PneumaticsSubsystem.getRaiseShoulderCommand().withTimeout(.5));
     NamedCommands.registerCommand("DropShoulder", m_PneumaticsSubsystem.getDropShoulderCommand().withTimeout(.5));
 
@@ -142,7 +144,6 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    // TODO: Uncomment this
     // m_robotDrive.setDefaultCommand(
     //     // The left stick controls translation of the robot.
     //     // Turning is controlled by the X axis of the right stick.
@@ -157,8 +158,10 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
       new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .7)
     );
-    //TODO: Uncomment this when you want to switch 
-    //m_robotDrive.setDefaultCommand(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX()));
+    
+    m_TheBassSubsystem.setDefaultCommand(m_TheBassSubsystem.getHoldPositionCommand());
+
+
   }
 
   /**
@@ -200,7 +203,8 @@ public class RobotContainer {
     driverLBumper.onTrue(m_PneumaticsSubsystem.getDropShoulderCommand());
 
 
-    
+    //SUGGESTTION -> create Trigger manualIntake = new Trigger(()->m_actuatorController.getLeftTriggerAxis()>OIConstants.kDriverLTriggerDeadband && m_actuatorController.getRightTriggerAxis()>OIConstants.kDriverLTriggerDeadband)
+    //then set the double supplier to be m_actuatorController.getRightTriggerAxis() - m_actuatorController.getLeftTriggerAxis()
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
       m_IndexerSubsystem.getSetPowerCommand(() -> m_actuatorController.getRightTriggerAxis()),
       m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_actuatorController.getRightTriggerAxis())
@@ -211,8 +215,8 @@ public class RobotContainer {
       m_IntakeSubsystem.getSetIntakePowerCommand(() -> -1*m_actuatorController.getLeftTriggerAxis())
       ));
     
-    actuatorLBumper.onTrue(m_PneumaticsSubsystem.getRaiseTheBassCommand());
-    actuatorRBumper.onTrue(m_PneumaticsSubsystem.getDropTheBassCommand());
+    actuatorLBumper.onTrue(m_TheBassSubsystem.getGoToAmpOuttakeCommand());
+    actuatorRBumper.onTrue(m_TheBassSubsystem.getDropTheBassCommand());
 
     actuatorA.whileTrue(new ParallelCommandGroup(
       m_ShooterSubsystem.getIntakeSourceCommand(),
@@ -260,7 +264,7 @@ public class RobotContainer {
 
     driverRBumper.whileTrue(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .3));
     //actuatorB.whileTrue(m_JawSubsystem.getIntakeNoteCommand()) TODO: Uncomment when jaw is on
-  }
+  } 
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -289,7 +293,6 @@ public class RobotContainer {
     //     AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
     // thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    //TODO: Uncomment this
     // SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
     //     exampleTrajectory,
     //     m_robotDrive::getPose, // Functional interface to feed supplier
@@ -310,9 +313,7 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public Command getPneumaticsCommand() {
-    return new PneumaticsCommand(m_PneumaticsSubsystem);
-  }
+
 
   public static XboxController getDriveControlJoystick() {
     return m_driverController;

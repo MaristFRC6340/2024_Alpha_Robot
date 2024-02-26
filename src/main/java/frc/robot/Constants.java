@@ -220,4 +220,11 @@ public final class Constants {
 
     public static final double kPRot = .1;
   }
+
+  public static final class BassConstants {
+    public static final int kBassID = 31;
+    public static double kP = .5;
+    public static double kGroundIntakePosition = 0;
+    public static double kAmpOuttake = 0;
+  }
 }

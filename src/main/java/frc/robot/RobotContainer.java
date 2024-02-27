@@ -159,7 +159,7 @@ public class RobotContainer {
       new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .7)
     );
     
-    m_TheBassSubsystem.setDefaultCommand(m_TheBassSubsystem.getHoldPositionCommand());
+    m_TheBassSubsystem.setDefaultCommand(m_TheBassSubsystem.getHoldPositionCommand(() -> m_TheBassSubsystem.getPosition()));
 
 
   }
@@ -215,8 +215,8 @@ public class RobotContainer {
       m_IntakeSubsystem.getSetIntakePowerCommand(() -> -1*m_actuatorController.getLeftTriggerAxis())
       ));
     
-    actuatorLBumper.onTrue(m_TheBassSubsystem.getGoToAmpOuttakeCommand());
-    actuatorRBumper.onTrue(m_TheBassSubsystem.getDropTheBassCommand());
+    actuatorLBumper.onTrue(m_TheBassSubsystem.getDropTheBassCommand());
+    actuatorRBumper.onTrue(m_TheBassSubsystem.getGoToTransferCommand());
 
     actuatorA.whileTrue(new ParallelCommandGroup(
       m_ShooterSubsystem.getIntakeSourceCommand(),
@@ -262,8 +262,9 @@ public class RobotContainer {
       m_ShooterSubsystem.stop();
     }));
 
-    driverRBumper.whileTrue(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .3));
+    driverRTrigger.whileTrue(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .3));
     //actuatorB.whileTrue(m_JawSubsystem.getIntakeNoteCommand()) TODO: Uncomment when jaw is on
+
   } 
 
   /**

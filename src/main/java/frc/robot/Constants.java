@@ -225,6 +225,7 @@ public final class Constants {
     public static final int kBassID = 31;
     public static double kP = .5;
     public static double kGroundIntakePosition = 0;
-    public static double kAmpOuttake = 0;
+    public static double kAmpOuttake = 52;
+    public static final double kTransferPose = 30;
   }
 }

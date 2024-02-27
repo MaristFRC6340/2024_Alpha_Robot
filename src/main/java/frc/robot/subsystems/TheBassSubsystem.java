@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.BassConstants;
@@ -19,12 +20,18 @@ public class TheBassSubsystem extends SubsystemBase {
     private RelativeEncoder bassEncoder;
 
     private SparkPIDController bassPID;
+
+    private double currentReference;
+
+
     public TheBassSubsystem() {
         theBassMotor = new CANSparkMax(BassConstants.kBassID, MotorType.kBrushless);
 
         theBassMotor.setSmartCurrentLimit(40);
 
         theBassMotor.setIdleMode(IdleMode.kBrake);
+
+        theBassMotor.setInverted(true);
 
         bassEncoder = theBassMotor.getEncoder();
 
@@ -49,6 +56,10 @@ public class TheBassSubsystem extends SubsystemBase {
         goToPosition(BassConstants.kGroundIntakePosition);
     }
 
+    public void goToTransfer() {
+        goToPosition(BassConstants.kTransferPose);
+    }
+
     public void stop() {
         setBasePower(0);
     }
@@ -65,7 +76,7 @@ public class TheBassSubsystem extends SubsystemBase {
     }
 
     public Command getSetPowerCommand(DoubleSupplier powerSupplier) {
-        return this.startEnd(() -> {
+        return this.runEnd(() -> {
             setBasePower(powerSupplier.getAsDouble());
         }, () -> {
             stop();
@@ -73,9 +84,12 @@ public class TheBassSubsystem extends SubsystemBase {
     }
 
     public Command getGoToPositionCommand(double position) {
-        return this.runOnce(() -> {
+        return this.startEnd(() -> {
             goToPosition(position);
-        });
+        }, () -> {
+            stop();
+        })
+        .until(() -> this.isAt(position));
     }
 
     public Command getGoToPositionCommand(DoubleSupplier positionSupplier) {
@@ -83,24 +97,54 @@ public class TheBassSubsystem extends SubsystemBase {
             goToPosition(positionSupplier.getAsDouble());
         }, () -> {
             stop();
-        });
+        }).until(() -> this.isAt(positionSupplier.getAsDouble()));
     }
 
     public Command getDropTheBassCommand() {
-        return this.runOnce(() -> {
+        return this.startEnd(() -> {
             dropTheBass();
-        });
+        }, () -> {
+            stop();
+        }).until(() -> this.isAt(BassConstants.kGroundIntakePosition));
     }
 
     public Command getGoToAmpOuttakeCommand() {
-        return this.runOnce(() -> {
+        return this.startEnd(() -> {
             goToAmpOuttake();
-        });
+        }, () -> {
+            stop();
+        }).until(() -> this.isAt(BassConstants.kAmpOuttake));
+    }
+
+    public Command getGoToTransferCommand() {
+        return this.startEnd(() -> {
+            goToTransfer();
+        }, () -> {
+            stop();
+        }).until(() -> this.isAt(BassConstants.kTransferPose));
     }
 
     public Command getHoldPositionCommand() {
         return this.run(() -> {
             goToPosition(getPosition());
         });
+    }
+
+    public Command getHoldPositionCommand(DoubleSupplier hold) {
+        return this.runOnce(() -> {
+            goToPosition(hold.getAsDouble());
+        });
+    }
+
+    public boolean isAt(double position) {
+        double current = bassEncoder.getPosition();
+
+        return Math.abs(current-position)<2;
+    }
+
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Bass Position", bassEncoder.getPosition());
     }
 }

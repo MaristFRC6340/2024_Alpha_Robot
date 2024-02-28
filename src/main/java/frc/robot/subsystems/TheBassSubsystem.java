@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.BassConstants;
 public class TheBassSubsystem extends SubsystemBase {
     private CANSparkMax theBassMotor;
@@ -30,8 +31,6 @@ public class TheBassSubsystem extends SubsystemBase {
         theBassMotor.setSmartCurrentLimit(40);
 
         theBassMotor.setIdleMode(IdleMode.kBrake);
-
-        theBassMotor.setInverted(true);
 
         bassEncoder = theBassMotor.getEncoder();
 
@@ -103,6 +102,7 @@ public class TheBassSubsystem extends SubsystemBase {
     public Command getDropTheBassCommand() {
         return this.startEnd(() -> {
             dropTheBass();
+            System.out.println("Dropped the Base");
         }, () -> {
             stop();
         }).until(() -> this.isAt(BassConstants.kGroundIntakePosition));
@@ -139,12 +139,14 @@ public class TheBassSubsystem extends SubsystemBase {
     public boolean isAt(double position) {
         double current = bassEncoder.getPosition();
 
-        return Math.abs(current-position)<2;
+        return Math.abs(current-position)<3.5;
     }
 
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Bass Position", bassEncoder.getPosition());
+
+        SmartDashboard.putNumber("POV", RobotContainer.getActuatorController().getPOV());
     }
 }

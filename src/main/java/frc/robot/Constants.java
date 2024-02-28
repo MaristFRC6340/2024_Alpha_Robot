@@ -212,10 +212,10 @@ public final class Constants {
     public static final double kPX = .03;
     public static final double kPY = .03;
 
-    public static final double speakerAimTXClose = 1.69;
-    public static final double speakerAimTYClose = -2.07;
+    public static final double speakerAimTXClose = 0;
+    public static final double speakerAimTYClose = 11.48;
     public static final double speakerAimTXFar = 0;
-    public static final double speakerAimTYFar = -21;
+    public static final double speakerAimTYFar = -6.08;
     public static double kTolerance = 2;
 
     public static final double kPRot = .1;
@@ -224,8 +224,8 @@ public final class Constants {
   public static final class BassConstants {
     public static final int kBassID = 31;
     public static double kP = .5;
-    public static double kGroundIntakePosition = 0;
-    public static double kAmpOuttake = 52;
-    public static final double kTransferPose = 30;
+    public static double kGroundIntakePosition = 60;
+    public static double kAmpOuttake = 8.5;
+    public static final double kTransferPose = 25.4;
   }
 }

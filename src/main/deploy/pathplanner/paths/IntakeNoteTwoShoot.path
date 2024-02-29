@@ -75,7 +75,7 @@
             {
               "type": "named",
               "data": {
-                "name": "StartGroundIntake"
+                "name": "RunIntake"
               }
             }
           ]
@@ -84,7 +84,7 @@
     },
     {
       "name": "StopIntaking",
-      "waypointRelativePos": 1.15,
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "parallel",
         "data": {
@@ -116,6 +116,23 @@
               "type": "named",
               "data": {
                 "name": "StartShooter"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Transfer Note",
+      "waypointRelativePos": 1.2,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TransferNote"
               }
             }
           ]

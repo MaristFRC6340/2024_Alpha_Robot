@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -111,7 +112,9 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-    
+    SmartDashboard.putNumber("Gyro", -m_gyro.getAngle());
+        SmartDashboard.putNumber("SwerveOdoGeo", this.getPose().getRotation().getDegrees());
+
 
 
   }
@@ -123,6 +126,10 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
+  }
+
+  public Rotation2d getGyroAngle(){
+    return Rotation2d.fromDegrees(-m_gyro.getAngle());
   }
 
 

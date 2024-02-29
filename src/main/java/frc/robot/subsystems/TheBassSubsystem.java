@@ -37,13 +37,17 @@ public class TheBassSubsystem extends SubsystemBase {
         bassPID = theBassMotor.getPIDController();
 
         bassPID.setP(BassConstants.kP);
+                    SmartDashboard.putBoolean("RESET BASS ENCODER", false);
+
     }
+    
 
     public void setBasePower(double power) {
         theBassMotor.set(power);
     }
 
     public void goToPosition(double position) {
+        if(position < 0)position = 0;
         bassPID.setReference(position, ControlType.kPosition);
     }
 
@@ -142,11 +146,20 @@ public class TheBassSubsystem extends SubsystemBase {
         return Math.abs(current-position)<3.5;
     }
 
+    public void resetEncoder(){
+        bassEncoder.setPosition(0);
+    }
+
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Bass Position", bassEncoder.getPosition());
 
         SmartDashboard.putNumber("POV", RobotContainer.getActuatorController().getPOV());
+        if(SmartDashboard.getBoolean("RESET BASS ENCODER", false)){
+            SmartDashboard.putBoolean("RESET BASS ENCODER", false);
+            System.out.println("RESETING BASS ENCODER");
+            resetEncoder();
+          }
     }
 }

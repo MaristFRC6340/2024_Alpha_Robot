@@ -44,7 +44,7 @@ public class PointToAprilTagCommand extends Command{
                 m_DriveSubsystem.drive(
                     0, 
                     0, 
-                    xError*LimelightConstants.kPRot, 
+                    -xError*LimelightConstants.kPRot, 
                     false, 
                     false);
             }
@@ -52,7 +52,7 @@ public class PointToAprilTagCommand extends Command{
                 m_DriveSubsystem.drive(
                     0, 
                     0, 
-                    xError*LimelightConstants.kPRot, 
+                    -xError*LimelightConstants.kPRot, 
                     false, 
                     false);
             }
@@ -67,9 +67,9 @@ public class PointToAprilTagCommand extends Command{
 
     @Override
     public boolean isFinished() {
-        if(Math.abs(tx.getDouble(0)-LimelightConstants.speakerAimTXFar)<LimelightConstants.kTolerance && tx.exists()) {
-            return true;
-        }
+        // if(Math.abs(tx.getDouble(0)-LimelightConstants.speakerAimTXFar)<LimelightConstants.kTolerance && tx.exists()) {
+        //     return true;
+        // }
         return false;
     }
 }

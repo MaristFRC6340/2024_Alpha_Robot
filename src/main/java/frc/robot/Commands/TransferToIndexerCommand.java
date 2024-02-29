@@ -3,46 +3,48 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TheBassSubsystem;
 
 public class TransferToIndexerCommand extends Command {
     
-    private TheBassSubsystem m_TheBassSubsystem;
 
     private IndexerSubsystem m_IndexerSubsystem;
 
     private IntakeSubsystem m_IntakeSubsystem;
 
+    private final ShooterSubsystem m_ShooterSubsystem;
 
     int timer = 0;
 
-    public TransferToIndexerCommand(TheBassSubsystem bass, IndexerSubsystem indexer, IntakeSubsystem intake) {
-        m_TheBassSubsystem = bass;
+    public TransferToIndexerCommand(IndexerSubsystem indexer, IntakeSubsystem intake, ShooterSubsystem shooter) {
         m_IndexerSubsystem = indexer;
         m_IntakeSubsystem = intake;
 
-        addRequirements(m_TheBassSubsystem, m_IndexerSubsystem, m_IntakeSubsystem);
+        m_ShooterSubsystem = shooter;
+        addRequirements(m_IndexerSubsystem, m_IntakeSubsystem, m_ShooterSubsystem);
     }
 
     @Override
     public void initialize() {
-        m_TheBassSubsystem.goToTransfer();
-
-        m_IndexerSubsystem.runForwards();
+        m_IndexerSubsystem.setPower(.3);
 
         m_IntakeSubsystem.intake();
+
+        m_ShooterSubsystem.setShooterPower(-.2);
     }
 
     @Override
     public void execute() {
+        timer++;
     }
 
     @Override
     public void end(boolean interupted) {
-        m_TheBassSubsystem.stop();
-
         m_IndexerSubsystem.stop();
 
         m_IntakeSubsystem.stop();
+
+        m_ShooterSubsystem.stop();
     }
 }

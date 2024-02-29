@@ -42,9 +42,11 @@ public class DriveToFarShotCommand extends Command{
             if(tx.exists()&& ty.exists()) {
                 xError = (tx.getDouble(0)-LimelightConstants.speakerAimTXFar);
                 yError = LimelightConstants.speakerAimTYFar - ty.getDouble(0);
+
+
                 m_DriveSubsystem.drive(
-                    yError*LimelightConstants.kPY, 
-                    -1*xError*LimelightConstants.kPX, 
+                    yError*LimelightConstants.kPY,
+                    -1*xError*LimelightConstants.kPX,
                     0, 
                     false, 
                     false);
@@ -52,7 +54,7 @@ public class DriveToFarShotCommand extends Command{
             else {
                 m_DriveSubsystem.drive(
                     yError*LimelightConstants.kPY, 
-                    -1*xError*LimelightConstants.kPX, 
+                    -1*xError*LimelightConstants.kPX,
                     0, 
                     false, 
                     false);

@@ -24,7 +24,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 2.0
                 }
               },
               {
@@ -45,7 +45,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "IntakeNoteOneShoot"
+            "pathName": "IntakeNoteTwoShoot"
           }
         },
         {
@@ -57,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "IntakeNoteTwoShoot"
+            "pathName": "IntakeNoteOneShoot"
           }
         },
         {

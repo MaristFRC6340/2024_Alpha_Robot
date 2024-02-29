@@ -22,8 +22,8 @@ public class JawSubsystem extends SubsystemBase {
     upperMandible = new CANSparkMax(JawConstants.kUpperMandibleID, MotorType.kBrushless);
     lowerMandible = new CANSparkMax(JawConstants.kLowerMandibleID, MotorType.kBrushless);
 
-    upperMandible.setSmartCurrentLimit(10);
-    lowerMandible.setSmartCurrentLimit(10);
+    upperMandible.setSmartCurrentLimit(20);
+    lowerMandible.setSmartCurrentLimit(20);
 
     upperMandible.setIdleMode(IdleMode.kBrake);
     lowerMandible.setIdleMode(IdleMode.kBrake);

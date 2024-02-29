@@ -160,7 +160,7 @@ public final class Constants {
 
   public static final class IntakeConstants {
     public static final int kRollerID = 30;
-    public static double kDefaultIntakePower = .7;
+    public static double kDefaultIntakePower = .3;
     public static double kDefaultOuttakePower = -.7;
     public static double kSlowIntakePower = .2;
     public static double kSlowOuttakePower = -.2;
@@ -213,12 +213,12 @@ public final class Constants {
     public static final double kPY = .03;
 
     public static final double speakerAimTXClose = 0;
-    public static final double speakerAimTYClose = 11.48;
+    public static final double speakerAimTYClose = 9;
     public static final double speakerAimTXFar = 0;
-    public static final double speakerAimTYFar = -6.08;
+    public static final double speakerAimTYFar = -7.5;
     public static double kTolerance = 2;
 
-    public static final double kPRot = .1;
+    public static final double kPRot = .01;
   }
 
   public static final class BassConstants {
@@ -226,6 +226,7 @@ public final class Constants {
     public static double kP = .5;
     public static double kGroundIntakePosition = 60;
     public static double kAmpOuttake = 8.5;
-    public static final double kTransferPose = 25.4;
+    public static final double kTransferPose =38;
+    public static final double minPosition = 0;
   }
 }

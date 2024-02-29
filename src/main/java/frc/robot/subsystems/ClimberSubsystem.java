@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
@@ -26,6 +27,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private SparkPIDController leftClimberPID;
   private SparkPIDController rightClimberPID;
+
+  private boolean climberUp = false;
 
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
@@ -46,7 +49,35 @@ public class ClimberSubsystem extends SubsystemBase {
 
     leftClimberPID.setP(ClimberConstants.kP);
     rightClimberPID.setP(ClimberConstants.kP);
+
+    SmartDashboard.putBoolean("RESET LEFT CLIMBER ENCODER", false);
+    SmartDashboard.putBoolean("RESET RIGHT CLIMBER ENCODER", false);
+
+
   }
+
+  @Override
+  public void periodic() {
+    if(rightEncoder.getPosition() > ClimberConstants.kClimbHeight/2.0){
+      climberUp = true;
+    }
+    else{
+      climberUp = false;
+    }
+    SmartDashboard.putNumber("RIGHT CLIMBER ENCODER", rightEncoder.getPosition());
+    SmartDashboard.putNumber("LEFT CLIMBER ENCODER", leftEncoder.getPosition());
+
+    if(SmartDashboard.getBoolean("RESET LEFT CLIMBER ENCODER", false)){
+      SmartDashboard.putBoolean("RESET LEFT CLIMBER ENCODER", false);
+      leftEncoder.setPosition(0);
+    }
+    if(SmartDashboard.getBoolean("RESET RIGHT CLIMBER ENCODER", false)){
+      SmartDashboard.putBoolean("RESET RIGHT CLIMBER ENCODER", false);
+      rightEncoder.setPosition(0);
+    }
+
+  }
+
 
 
 
@@ -59,6 +90,9 @@ public class ClimberSubsystem extends SubsystemBase {
   public void setClimberPower(double power) {
     leftClimber.set(-power);
     rightClimber.set(power);
+    SmartDashboard.putNumber("RIGHT CLIMBER", this.getRightEncoderCounts());
+    SmartDashboard.putNumber("LEFT CLIMBER", this.getLeftEncoderCounts());
+
     System.out.println("Left Encoder: " + this.getLeftEncoderCounts());
     System.out.println("Right Encoder: " + this.getRightEncoderCounts());
   }
@@ -68,6 +102,8 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param encoderCounts
    */
   public void goToPosition(double encoderCounts) {
+    if(encoderCounts > 0)encoderCounts = 0;
+    
     leftClimberPID.setReference(encoderCounts, CANSparkMax.ControlType.kPosition);
     rightClimberPID.setReference(encoderCounts, CANSparkMax.ControlType.kPosition);
   }
@@ -93,6 +129,17 @@ public class ClimberSubsystem extends SubsystemBase {
    */
   public void goToClimbHeight() {
     goToPosition(ClimberConstants.kClimbHeight);
+  }
+
+  public void toggleClimber(){
+    if(climberUp){
+      //goToPosition(0);
+      System.out.println("GO DOWN");
+    }
+    else{
+      //goToClimbHeight();
+      System.out.println("GO UP");
+    }
   }
 
   /**
@@ -126,6 +173,13 @@ public class ClimberSubsystem extends SubsystemBase {
     }, () -> {
       stop();
     });
+  }
+
+  public Command setRightClimberPower(DoubleSupplier powerSupplier){
+    return this.startEnd(()->{rightClimber.set(powerSupplier.getAsDouble());}, ()->{rightClimber.set(0);});
+  }
+  public Command setLeftClimberPower(DoubleSupplier powerSupplier){
+    return this.startEnd(()->{leftClimber.set(powerSupplier.getAsDouble());}, ()->{leftClimber.set(0);});
   }
 
   /**
@@ -162,6 +216,8 @@ public class ClimberSubsystem extends SubsystemBase {
       goToPosition(getLeftEncoderCounts());
     });
   }
+
+  
 
 
 }

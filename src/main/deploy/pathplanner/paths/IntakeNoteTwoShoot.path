@@ -61,7 +61,7 @@
   "eventMarkers": [
     {
       "name": "StartIntaking",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -84,7 +84,7 @@
     },
     {
       "name": "StopIntaking",
-      "waypointRelativePos": 0.8,
+      "waypointRelativePos": 1.4,
       "command": {
         "type": "parallel",
         "data": {

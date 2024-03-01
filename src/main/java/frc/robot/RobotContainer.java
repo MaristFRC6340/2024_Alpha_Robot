@@ -221,7 +221,7 @@ public class RobotContainer {
     driverRBumper.onTrue(m_PneumaticsSubsystem.getRaiseShoulderCommand());
     driverLBumper.onTrue(m_PneumaticsSubsystem.getDropShoulderCommand());
 
-    actuatorLeftX.whileTrue(m_JawSubsystem.getRotateNoteCommand(() -> m_actuatorController.getLeftX()));
+    actuatorLeftY.whileTrue(m_JawSubsystem.getRotateNoteCommand(() -> -m_actuatorController.getLeftY()));
     //SUGGESTTION -> create Trigger manualIntake = new Trigger(()->m_actuatorController.getLeftTriggerAxis()>OIConstants.kDriverLTriggerDeadband && m_actuatorController.getRightTriggerAxis()>OIConstants.kDriverLTriggerDeadband)
     //then set the double supplier to be m_actuatorController.getRightTriggerAxis() - m_actuatorController.getLeftTriggerAxis()
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
@@ -244,10 +244,10 @@ public class RobotContainer {
 
    
 
-    actuatorDpadUp.onTrue(m_TheBassSubsystem.getGoToAmpOuttakeCommand().withTimeout(1));
-    actuatorDpadDown.onTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(1));
-    actuatorDpadRight.onTrue(m_TheBassSubsystem.getGoToTransferCommand().withTimeout(1));
-    actuatorDpadLeft.onTrue(new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem, m_ShooterSubsystem).withTimeout(1), new ParallelCommandGroup(m_TheBassSubsystem.getDropTheBassCommand(), m_IndexerSubsystem.getRunBackwardsCommand().withTimeout(.5))));
+    actuatorDpadUp.whileTrue(m_TheBassSubsystem.getGoToAmpOuttakeCommand().withTimeout(1));
+    actuatorDpadDown.whileTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(1));
+    actuatorDpadRight.whileTrue(m_TheBassSubsystem.getGoToTransferCommand().withTimeout(1));
+    actuatorDpadLeft.whileTrue(new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem, m_ShooterSubsystem)));
 
     actuatorX.whileTrue(new ParallelCommandGroup(
       m_ShooterSubsystem.getIntakeSourceCommand(),

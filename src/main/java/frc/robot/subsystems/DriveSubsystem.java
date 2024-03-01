@@ -19,6 +19,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.SPI;
@@ -65,6 +68,11 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
+   private NetworkTable limTable;
+    private NetworkTableEntry tx;
+    private NetworkTableEntry ty;
+    private NetworkTableEntry ledMode;
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -78,6 +86,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+
+     limTable = NetworkTableInstance.getDefault().getTable("limelight");
+        ledMode = limTable.getEntry("ledMode");
+        tx = limTable.getEntry("tx");
+        ty = limTable.getEntry("ty");
+
+
     AutoBuilder.configureHolonomic(
       this::getPose,
       this::resetOdometry,
@@ -102,6 +117,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    tx = limTable.getEntry("tx");
+    ty = limTable.getEntry("ty");
+      if(tx.exists()&& ty.exists()&&tx.getDouble(0)!=0 &&ty.getDouble(0)!=0){
+         SmartDashboard.putBoolean("inSpeakerRange", true);
+      }
+      else SmartDashboard.putBoolean("inSpeakerRange", false);
+
     // Update the odometry in the periodic block
     m_odometry.update(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),

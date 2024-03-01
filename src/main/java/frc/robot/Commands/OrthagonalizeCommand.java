@@ -32,7 +32,7 @@ public class OrthagonalizeCommand extends Command{
     @Override
     public void execute() {
                 
-                rotError = -m_DriveSubsystem.getGyroAngle().getRadians()*LimelightConstants.kPRot*50;
+                rotError = (Math.PI-m_DriveSubsystem.getGyroAngle().getRadians())*LimelightConstants.kPRot*50;
                 if(rotError < 0)rotError-=.1;
                 else rotError+=.1;
 

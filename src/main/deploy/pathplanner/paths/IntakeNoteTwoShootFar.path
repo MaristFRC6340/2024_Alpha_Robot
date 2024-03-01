@@ -8,36 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7735989365823974,
-        "y": 6.0468411410379295
+        "x": 1.3,
+        "y": 5.5
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.3917278586612025,
-        "y": 6.911960468785701
-      },
-      "prevControl": {
-        "x": 2.1791426140129415,
-        "y": 6.855931188531932
-      },
-      "nextControl": {
-        "x": 4.228230596608085,
-        "y": 7.395991835880301
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.5,
+        "x": 3.0,
         "y": 5.5
       },
       "prevControl": {
-        "x": 1.9203964629831292,
-        "y": 6.494459495063197
+        "x": 4.52,
+        "y": 5.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,22 +32,16 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake",
+      "name": "StartIntake",
       "waypointRelativePos": 0.0,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "Drop"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "RunIntake"
+                "name": "StartIntake"
               }
             }
           ]
@@ -71,33 +49,10 @@
       }
     },
     {
-      "name": "Stop Intake",
-      "waypointRelativePos": 0.75,
+      "name": "StartShooter",
+      "waypointRelativePos": 0,
       "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "StopIntake"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "StopIndexer"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Spin Up Shooter",
-      "waypointRelativePos": 1.1,
-      "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
@@ -111,16 +66,45 @@
       }
     },
     {
-      "name": "TransferNote",
-      "waypointRelativePos": 1.6,
+      "name": "lowerShoulder",
+      "waypointRelativePos": 0,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "TransferNote"
+                "name": "LowerShoulder"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "wait",
+              "data": {
+                "waitTime": 1.0
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StopShooter"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "StopIndexer"
               }
             }
           ]
@@ -136,7 +120,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,

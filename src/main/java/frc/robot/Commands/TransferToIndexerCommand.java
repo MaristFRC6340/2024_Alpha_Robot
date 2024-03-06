@@ -13,16 +13,15 @@ public class TransferToIndexerCommand extends Command {
 
     private IntakeSubsystem m_IntakeSubsystem;
 
-    private final ShooterSubsystem m_ShooterSubsystem;
 
     int timer = 0;
 
-    public TransferToIndexerCommand(IndexerSubsystem indexer, IntakeSubsystem intake, ShooterSubsystem shooter) {
+    public TransferToIndexerCommand(IndexerSubsystem indexer, IntakeSubsystem intake) {
         m_IndexerSubsystem = indexer;
         m_IntakeSubsystem = intake;
 
-        m_ShooterSubsystem = shooter;
-        addRequirements(m_IndexerSubsystem, m_IntakeSubsystem, m_ShooterSubsystem);
+        //m_ShooterSubsystem = shooter;
+        addRequirements(m_IndexerSubsystem, m_IntakeSubsystem);
     }
 
     @Override
@@ -31,7 +30,7 @@ public class TransferToIndexerCommand extends Command {
 
         m_IntakeSubsystem.intake();
 
-        m_ShooterSubsystem.setShooterPower(-.2);
+        //m_ShooterSubsystem.setShooterPower(-.2);
     }
 
     @Override
@@ -45,6 +44,6 @@ public class TransferToIndexerCommand extends Command {
 
         m_IntakeSubsystem.stop();
 
-        m_ShooterSubsystem.stop();
+        //m_ShooterSubsystem.stop();
     }
 }

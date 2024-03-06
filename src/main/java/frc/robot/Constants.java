@@ -173,6 +173,12 @@ public final class Constants {
     public static double kP = .01;
     public static double kLowerSpeed = -.9;
     public static double kClimbHeight = 500;
+
+    public static double kLeftMax = -300; // This is negative, note that it is really a "min"
+    public static double kRightMax = 300; // This is positive, note it is a true max
+
+    public static double kLeftMin = -10; // Original is zero
+    public static double kRightMin = 10; // Original is zero
   }
 
   public static final class ExtenderConstants {
@@ -181,6 +187,7 @@ public final class Constants {
     public static double kAmpOuttake;
     public static double kTrapOuttake;
     public static double kP;
+
   }
 
   public static final class JawConstants {
@@ -215,7 +222,7 @@ public final class Constants {
     public static final double speakerAimTXClose = 0;
     public static final double speakerAimTYClose = 9;
     public static final double speakerAimTXFar = 0;
-    public static final double speakerAimTYFar = -7.5;
+    public static final double speakerAimTYFar = -3.2; // Original -7.5, Adjusted for limelight lower michaudc
     public static double kTolerance = 2;
 
     public static final double kPRot = .01;

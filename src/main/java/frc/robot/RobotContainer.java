@@ -128,6 +128,8 @@ public class RobotContainer {
   public RobotContainer() {
 
     //Register Named Commands
+    NamedCommands.registerCommand("HighLaunchNoteKeepShooterRunning", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem, true));
+
     NamedCommands.registerCommand("HighLaunchNote", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
     NamedCommands.registerCommand("LowLaunchNote", new LowLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
     NamedCommands.registerCommand("StartShooter", m_ShooterSubsystem.getPrepareLaunchCommand());
@@ -142,7 +144,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("RunOuttake", m_IntakeSubsystem.getOuttakeCommand());
     NamedCommands.registerCommand("RaiseTheBass", m_TheBassSubsystem.getGoToAmpOuttakeCommand().withTimeout(.5));
     NamedCommands.registerCommand("TransferTheBass", m_TheBassSubsystem.getGoToTransferCommand().withTimeout(.5));
-    NamedCommands.registerCommand("DropTheBass", m_TheBassSubsystem.getDropTheBassCommand().withTimeout(.5));
+    NamedCommands.registerCommand("DropTheBass", m_TheBassSubsystem.getDropTheBassCommand().withTimeout(1));
     NamedCommands.registerCommand("RaiseShoulder", m_PneumaticsSubsystem.getRaiseShoulderCommand().withTimeout(.5));
     NamedCommands.registerCommand("DropShoulder", m_PneumaticsSubsystem.getDropShoulderCommand().withTimeout(.5));
 
@@ -153,7 +155,7 @@ public class RobotContainer {
     // NamedCommands.registerCommand("IntakeAndShootLow", new IntakeAndShootLowCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem));
     // NamedCommands.registerCommand("IntakeAndShootHigh", new IntakeAndShootHighCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem));
 
-    NamedCommands.registerCommand("TransferNote", new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem, m_ShooterSubsystem).withTimeout(1.5), m_TheBassSubsystem.getDropTheBassCommand()));
+    NamedCommands.registerCommand("TransferNote", new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(1.5), m_TheBassSubsystem.getDropTheBassCommand()));
 
     autoChooser = AutoBuilder.buildAutoChooser("default");
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -247,7 +249,7 @@ public class RobotContainer {
     actuatorDpadUp.whileTrue(m_TheBassSubsystem.getGoToAmpOuttakeCommand().withTimeout(1));
     actuatorDpadDown.whileTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(1));
     actuatorDpadRight.whileTrue(m_TheBassSubsystem.getGoToTransferCommand().withTimeout(1));
-    actuatorDpadLeft.whileTrue(new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem, m_ShooterSubsystem)));
+    actuatorDpadLeft.whileTrue(new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)));
 
     actuatorX.whileTrue(new ParallelCommandGroup(
       m_ShooterSubsystem.getIntakeSourceCommand(),
@@ -255,6 +257,8 @@ public class RobotContainer {
     ));
 
     actuatorB.whileTrue(m_ShooterSubsystem.getSetShooterPowerCommand(.7));
+
+    // Climber Control
     actuatorY.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(.5));
     actuatorA.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(-.5));
 

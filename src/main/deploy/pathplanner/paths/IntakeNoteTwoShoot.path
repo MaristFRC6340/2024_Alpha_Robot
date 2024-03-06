@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.4864926449147118,
-        "y": 5.531220073814229
+        "x": 1.5,
+        "y": 5.5
       },
       "prevControl": {
-        "x": 3.0035916387446333,
-        "y": 5.515610036907114
+        "x": 3.017179300653684,
+        "y": 5.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -69,12 +69,6 @@
             {
               "type": "named",
               "data": {
-                "name": "DropTheBass"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
                 "name": "RunIntake"
               }
             }
@@ -84,7 +78,7 @@
     },
     {
       "name": "StopIntaking",
-      "waypointRelativePos": 1.4,
+      "waypointRelativePos": 0.8,
       "command": {
         "type": "parallel",
         "data": {
@@ -100,18 +94,7 @@
               "data": {
                 "name": "StopIndexer"
               }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "StartShooter",
-      "waypointRelativePos": 1.5,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
+            },
             {
               "type": "named",
               "data": {
@@ -123,8 +106,8 @@
       }
     },
     {
-      "name": "Transfer Note",
-      "waypointRelativePos": 1.2,
+      "name": "TransferNote",
+      "waypointRelativePos": 1.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -132,7 +115,7 @@
             {
               "type": "named",
               "data": {
-                "name": "TransferNote"
+                "name": "TransferTheBass"
               }
             }
           ]

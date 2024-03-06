@@ -88,13 +88,34 @@ public class ClimberSubsystem extends SubsystemBase {
    * @param power
    */
   public void setClimberPower(double power) {
-    leftClimber.set(-power);
-    rightClimber.set(power);
+
+    // Boundary conditionals Left (negative is "max")
+    // Up Check
+    if (this.getLeftEncoderCounts() > ClimberConstants.kLeftMax && power >= 0) {
+      leftClimber.set(-power);
+    }
+
+    // Down Check
+    if (this.getLeftEncoderCounts() < ClimberConstants.kLeftMin && power <= 0) {
+      leftClimber.set(-power);
+    }
+
+    // Boundary conditionals right
+    // Up Cleck
+    if (this.getRightEncoderCounts() < ClimberConstants.kRightMax && power >= 0) {
+      rightClimber.set(power);
+    }
+
+    // Down Check
+    if (this.getRightEncoderCounts() > ClimberConstants.kRightMin && power <= 0) {
+      rightClimber.set(power);
+    }
+
     SmartDashboard.putNumber("RIGHT CLIMBER", this.getRightEncoderCounts());
     SmartDashboard.putNumber("LEFT CLIMBER", this.getLeftEncoderCounts());
 
-    System.out.println("Left Encoder: " + this.getLeftEncoderCounts());
-    System.out.println("Right Encoder: " + this.getRightEncoderCounts());
+    //System.out.println("Left Encoder: " + this.getLeftEncoderCounts());
+    //System.out.println("Right Encoder: " + this.getRightEncoderCounts());
   }
 
   /**

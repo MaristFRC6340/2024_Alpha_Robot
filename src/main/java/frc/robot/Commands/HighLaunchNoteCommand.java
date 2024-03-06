@@ -10,9 +10,20 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 public class HighLaunchNoteCommand extends SequentialCommandGroup{
 
+    public HighLaunchNoteCommand(PneumaticsSubsystem pneum, ShooterSubsystem shooter, IndexerSubsystem indexer, boolean stopShooterAtEnd){
+        addCommands(pneum.getRaiseShoulderCommand(), 
+                        shooter.getPrepareLaunchCommand(), 
+                        new WaitCommand(Constants.ShooterConstants.prepareLaunchDelay), 
+                        indexer.getRunForwardCommand(), 
+                        new WaitCommand(ShooterConstants.shootToRestDelay), 
+                        indexer.getStopCommand(), 
+                        shooter.getStopShooterCommand());
+    }
 
     public HighLaunchNoteCommand(PneumaticsSubsystem pneum, ShooterSubsystem shooter, IndexerSubsystem indexer){
-        addCommands(pneum.getRaiseShoulderCommand(), shooter.getPrepareLaunchCommand(), new WaitCommand(Constants.ShooterConstants.prepareLaunchDelay), indexer.getRunForwardCommand(), new WaitCommand(ShooterConstants.shootToRestDelay), indexer.getStopCommand(), shooter.getStopShooterCommand());
+        this(pneum, shooter, indexer, false);
+
+        
     }
 
 

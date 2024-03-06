@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5,
-      "y": 5.5
+      "x": 2,
+      "y": 2
     },
-    "rotation": 180.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "named",
-          "data": {
-            "name": "DropTheBass"
-          }
-        },
         {
           "type": "deadline",
           "data": {
@@ -37,9 +31,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "sequential",
           "data": {
-            "pathName": "IntakeNoteTwoShootFar"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopShooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopIndexer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopIntake"
+                }
+              }
+            ]
           }
         }
       ]

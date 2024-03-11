@@ -122,6 +122,9 @@ public class RobotContainer {
   Trigger actuatorLTrigger = new Trigger(() -> m_actuatorController.getLeftTriggerAxis()>OIConstants.kDriverLTriggerDeadband);
   Trigger actuatorRTrigger = new Trigger(() -> m_actuatorController.getRightTriggerAxis()>OIConstants.kDriverRTriggerDeadband);
   Trigger driverDpad = new Trigger(()->m_driverController.getPOV()!=-1);
+
+  Trigger inShootingRange = new Trigger(()->m_robotDrive.inShootingRange(m_PneumaticsSubsystem.getShoulderRaised()));
+
   SendableChooser<Command> autoChooser;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -323,7 +326,10 @@ public class RobotContainer {
     driverX.whileTrue(m_robotDrive.getSetXCommand());
     driverA.whileTrue(new PointToAprilTagCommand(m_robotDrive));
 
+    //New Stuff that Cole added
     driverRTrigger.whileTrue(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .3));
+    driverRTrigger.whileTrue(m_ShooterSubsystem.getPrepareLaunchCommand().handleInterrupt(()->m_ShooterSubsystem.stop()));
+    driverRTrigger.and(inShootingRange).onTrue(new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem));
     //actuatorB.whileTrue(m_JawSubsystem.getIntakeNoteCommand()) TODO: Uncomment when jaw is on
 
   } 

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class DriveToFarShotCommand extends Command{
+public class AimAndDriveFarCommand extends Command{
     private NetworkTable limTable;
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
@@ -17,7 +17,7 @@ public class DriveToFarShotCommand extends Command{
 
     private DriveSubsystem m_DriveSubsystem;
     
-    public DriveToFarShotCommand(DriveSubsystem drive) {
+    public AimAndDriveFarCommand(DriveSubsystem drive) {
         m_DriveSubsystem = drive;
         addRequirements(m_DriveSubsystem);
 
@@ -46,16 +46,17 @@ public class DriveToFarShotCommand extends Command{
 
                 m_DriveSubsystem.drive(
                     yError*LimelightConstants.kPY,
-                    -1*xError*LimelightConstants.kPX,
-                    0, 
+                   0,
+                    -xError*LimelightConstants.kPRot, 
+                     
                     false, 
                     false);
             }
             else {
                 m_DriveSubsystem.drive(
                     yError*LimelightConstants.kPY, 
-                    -1*xError*LimelightConstants.kPX,
-                    0, 
+                   0,
+                    -xError*LimelightConstants.kPRot, 
                     false, 
                     false);
             }
@@ -70,7 +71,7 @@ public class DriveToFarShotCommand extends Command{
 
     @Override
     public boolean isFinished() {
-        if(Math.abs(tx.getDouble(0)-LimelightConstants.speakerAimTXFar)<LimelightConstants.kTolerance && Math.abs(LimelightConstants.speakerAimTYFar - ty.getDouble(0)) < 2) {/**Changed Dalton, ecvenetually we should make a constant for this */
+        if(Math.abs(tx.getDouble(0))<1 && Math.abs(LimelightConstants.speakerAimTYFar - ty.getDouble(0)) < 2) {/**Changed Dalton, ecvenetually we should make a constant for this */
             return true;
         }
         return false;

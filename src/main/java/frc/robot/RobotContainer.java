@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Commands.AimAndDriveFarCommand;
 import frc.robot.Commands.DriveCommand;
 import frc.robot.Commands.DriveToCloseShotCommand;
 import frc.robot.Commands.DriveToFarShotCommand;
@@ -32,7 +33,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.ClimberSubsystem;
+//import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -77,20 +78,20 @@ public class RobotContainer {
 
   private final PneumaticsSubsystem m_PneumaticsSubsystem = new PneumaticsSubsystem();
 
-  private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
+  //private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private final TheBassSubsystem m_TheBassSubsystem = new TheBassSubsystem();
 
-  private final JawSubsystem m_JawSubsystem = new JawSubsystem();
+  //private final JawSubsystem m_JawSubsystem = new JawSubsystem();
   // The driver's controller
   static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   //The actuator's controller
   static XboxController m_actuatorController = new XboxController(OIConstants.kActuatorControllerPort);
 
   //Create Triggers for bindings
-
+  Trigger driverStart = new JoystickButton(m_driverController, XboxController.Button.kStart.value);
   Trigger driverA = new JoystickButton(m_driverController, XboxController.Button.kA.value);
   Trigger driverB = new JoystickButton(m_driverController, XboxController.Button.kB.value);
   Trigger driverX = new JoystickButton(m_driverController, XboxController.Button.kX.value);
@@ -177,7 +178,7 @@ public class RobotContainer {
     //         m_robotDrive));
     
     m_robotDrive.setDefaultCommand(
-      new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .7)
+      new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), 1)
     );
     
     //m_TheBassSubsystem.setDefaultCommand(m_TheBassSubsystem.getHoldPositionCommand(() -> m_TheBassSubsystem.getPosition()));
@@ -223,19 +224,19 @@ public class RobotContainer {
     driverRBumper.onTrue(m_PneumaticsSubsystem.getRaiseShoulderCommand());
     driverLBumper.onTrue(m_PneumaticsSubsystem.getDropShoulderCommand());
 
-    actuatorLeftY.whileTrue(m_JawSubsystem.getRotateNoteCommand(() -> -m_actuatorController.getLeftY()));
+    //actuatorLeftY.whileTrue(m_JawSubsystem.getRotateNoteCommand(() -> -m_actuatorController.getLeftY()));
     //SUGGESTTION -> create Trigger manualIntake = new Trigger(()->m_actuatorController.getLeftTriggerAxis()>OIConstants.kDriverLTriggerDeadband && m_actuatorController.getRightTriggerAxis()>OIConstants.kDriverLTriggerDeadband)
     //then set the double supplier to be m_actuatorController.getRightTriggerAxis() - m_actuatorController.getLeftTriggerAxis()
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
       m_IndexerSubsystem.getSetPowerCommand(() -> m_actuatorController.getRightTriggerAxis()),
-      m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_actuatorController.getRightTriggerAxis()),
-      m_JawSubsystem.getIntakeNoteCommand(.7)
+      m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_actuatorController.getRightTriggerAxis())
+      //m_JawSubsystem.getIntakeNoteCommand(.7)
     ));
 
     actuatorLTrigger.whileTrue(new ParallelCommandGroup(
       m_IndexerSubsystem.getSetPowerCommand(() -> -1*m_actuatorController.getLeftTriggerAxis()),
-      m_IntakeSubsystem.getSetIntakePowerCommand(-.75),
-      m_JawSubsystem.getIntakeNoteCommand(-.95)
+      m_IntakeSubsystem.getSetIntakePowerCommand(-.75)
+      //m_JawSubsystem.getIntakeNoteCommand(-.95)
       ));
     
     //actuatorLBumper.whileTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(.7));
@@ -246,10 +247,21 @@ public class RobotContainer {
 
    
 
-    actuatorDpadUp.whileTrue(m_TheBassSubsystem.getGoToAmpOuttakeCommand().withTimeout(1));
-    actuatorDpadDown.whileTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(1));
-    actuatorDpadRight.whileTrue(m_TheBassSubsystem.getGoToTransferCommand().withTimeout(1));
-    actuatorDpadLeft.whileTrue(new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)));
+    // actuatorDpadUp.whileTrue(m_TheBassSubsystem.getGoToRestCommand().withTimeout(1));
+    // actuatorDpadDown.whileTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(1));
+    // actuatorDpadRight.whileTrue(m_TheBassSubsystem.getGoToTransferCommand().withTimeout(1));
+    // actuatorDpadLeft.whileTrue(new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new WaitCommand(.5), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)));
+
+
+    actuatorDpadUp.whileTrue(m_TheBassSubsystem.daltonGoToRestCommand());
+    actuatorDpadRight.whileTrue(m_TheBassSubsystem.daltonGoToTransferCommand());
+    actuatorDpadLeft.whileTrue(new SequentialCommandGroup(
+      m_TheBassSubsystem.daltonGoToTransferCommand(),
+       new WaitCommand(.5),
+        new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)));
+    actuatorDpadDown.whileTrue(m_TheBassSubsystem.daltonDropTheBassCommand());
+    //actuatorDpadDown.whileTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(.5));
+
 
     actuatorX.whileTrue(new ParallelCommandGroup(
       m_ShooterSubsystem.getIntakeSourceCommand(),
@@ -259,8 +271,8 @@ public class RobotContainer {
     actuatorB.whileTrue(m_ShooterSubsystem.getSetShooterPowerCommand(.7));
 
     // Climber Control
-    actuatorY.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(.5));
-    actuatorA.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(-.5));
+    //actuatorY.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(1));
+    //actuatorA.whileTrue(m_ClimberSubsystem.getSetClimberPowerCommand(-.6));
 
 
     driverDpad.onTrue(m_robotDrive.getResetHeadingCommand(m_driverController.getPOV()));
@@ -271,7 +283,18 @@ public class RobotContainer {
       new ParallelDeadlineGroup(
         new ParallelCommandGroup(
           new WaitCommand(2),
-          new SequentialCommandGroup(new OrthagonalizeCommand(m_robotDrive), new DriveToCloseShotCommand(m_robotDrive))
+          new SequentialCommandGroup(/**new OrthagonalizeCommand(m_robotDrive),**/ new DriveToCloseShotCommand(m_robotDrive).withTimeout(2))
+        ), 
+        m_ShooterSubsystem.getPrepareLaunchCommand()),
+        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+
+
+    driverStart.whileTrue(new SequentialCommandGroup(
+      m_PneumaticsSubsystem.getDropShoulderCommand(),
+      new ParallelDeadlineGroup(
+        new ParallelCommandGroup(
+          new WaitCommand(2),
+          new SequentialCommandGroup( new AimAndDriveFarCommand(m_robotDrive).withTimeout(2))
         ), 
         m_ShooterSubsystem.getPrepareLaunchCommand()),
         new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
@@ -281,22 +304,23 @@ public class RobotContainer {
       new ParallelDeadlineGroup(
         new ParallelCommandGroup(
           new WaitCommand(2),
-          new SequentialCommandGroup(new OrthagonalizeCommand(m_robotDrive), new DriveToFarShotCommand(m_robotDrive))
+          new SequentialCommandGroup(/**new OrthagonalizeCommand(m_robotDrive) ,**/ new DriveToFarShotCommand(m_robotDrive))
         ), 
         m_ShooterSubsystem.getPrepareLaunchCommand()),
         new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
 
-    driverX.whileTrue(new SequentialCommandGroup(
-      m_PneumaticsSubsystem.getRaiseShoulderCommand(),
-      new ParallelRaceGroup(
-        new DriveToSourceCommand(m_robotDrive),
-        m_ShooterSubsystem.getIntakeSourceCommand()
-      ),
-      new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
-    ).handleInterrupt(() -> {
-      m_ShooterSubsystem.stop();
-    }));
+    // driverX.whileTrue(new SequentialCommandGroup(
+    //   m_PneumaticsSubsystem.getRaiseShoulderCommand(),
+    //   new ParallelRaceGroup(
+    //     new DriveToSourceCommand(m_robotDrive),
+    //     m_ShooterSubsystem.getIntakeSourceCommand()
+    //   ),
+    //   new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
+    // ).handleInterrupt(() -> {
+    //   m_ShooterSubsystem.stop();
+    // }));
 
+    driverX.whileTrue(m_robotDrive.getSetXCommand());
     driverA.whileTrue(new PointToAprilTagCommand(m_robotDrive));
 
     driverRTrigger.whileTrue(new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .3));

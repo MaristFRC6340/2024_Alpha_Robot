@@ -106,10 +106,10 @@ public class DriveSubsystem extends SubsystemBase {
         new ReplanningConfig()
       ),
      () -> {
-      var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
-      }
+      // var alliance = DriverStation.getAlliance();
+      // if (alliance.isPresent()) {
+      //     return alliance.get() == DriverStation.Alliance.Red;
+      // }
       return false;
      },
      this);
@@ -198,7 +198,7 @@ public class DriveSubsystem extends SubsystemBase {
       if (m_currentTranslationMag != 0.0) {
         directionSlewRate = Math.abs(DriveConstants.kDirectionSlewRate / m_currentTranslationMag);
       } else {
-        directionSlewRate = 500.0; //some high number that means the slew rate is effectively instantaneous
+        directionSlewRate = 500; //some high number that means the slew rate is effectively instantaneous
       }
       
 
@@ -319,6 +319,14 @@ public class DriveSubsystem extends SubsystemBase {
   public Command getResetHeadingCommand(double offset) {
     return this.runOnce( () -> {
       this.zeroHeading(offset);
+    });
+  }
+
+  public Command getSetXCommand() {
+    return this.runEnd(() -> {
+      setX();
+    }, () -> {
+      this.drive(0,0,0,false,false);
     });
   }
 }

@@ -69,6 +69,9 @@ public class TheBassSubsystem extends SubsystemBase {
     public void goToAmpOuttake() {
         goToPosition(BassConstants.kAmpOuttake);
     }
+    public void goToRest() {
+        goToPosition(BassConstants.kRestPosition);
+    }
 
     public Command getSetPowerCommand(double power) {
         return this.startEnd(() -> {
@@ -119,6 +122,13 @@ public class TheBassSubsystem extends SubsystemBase {
             stop();
         }).until(() -> this.isAt(BassConstants.kAmpOuttake));
     }
+    public Command getGoToRestCommand() {
+        return this.startEnd(() -> {
+            goToRest();
+        }, () -> {
+            stop();
+        }).until(() -> this.isAt(BassConstants.kRestPosition));
+    }
 
     public Command getGoToTransferCommand() {
         return this.startEnd(() -> {
@@ -126,6 +136,7 @@ public class TheBassSubsystem extends SubsystemBase {
         }, () -> {
             stop();
         }).until(() -> this.isAt(BassConstants.kTransferPose));
+        
     }
 
     public Command getHoldPositionCommand() {
@@ -150,6 +161,24 @@ public class TheBassSubsystem extends SubsystemBase {
         bassEncoder.setPosition(0);
     }
 
+    public Command daltonGoToRestCommand() {
+        return this.runOnce(() -> {
+            goToRest();
+        });
+    }
+
+    public Command daltonGoToTransferCommand() {
+        return this.runOnce(() -> {
+            goToTransfer();
+        });
+    }
+
+    public Command daltonDropTheBassCommand() {
+        return this.runOnce(() -> {
+            dropTheBass();
+        });
+    }
+
 
     @Override
     public void periodic() {
@@ -162,4 +191,6 @@ public class TheBassSubsystem extends SubsystemBase {
             resetEncoder();
           }
     }
+
+
 }

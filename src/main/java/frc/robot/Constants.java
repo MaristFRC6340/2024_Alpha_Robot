@@ -222,7 +222,7 @@ public final class Constants {
     public static final double speakerAimTXClose = 0;
     public static final double speakerAimTYClose = 9;
     public static final double speakerAimTXFar = 0;
-    public static final double speakerAimTYFar = -3.2; // Original -7.5, Adjusted for limelight lower michaudc
+    public static final double speakerAimTYFar = -9.9; // Original -3.2, Adjusted for dalton field tolerances
     public static double kTolerance = 2;
 
     public static final double kPRot = .01;
@@ -231,9 +231,11 @@ public final class Constants {
   public static final class BassConstants {
     public static final int kBassID = 31;
     public static double kP = .5;
-    public static double kGroundIntakePosition = 60;
+    public static double kGroundIntakePosition = 58;
     public static double kAmpOuttake = 8.5;
-    public static final double kTransferPose =38;
+    public static double kRestPosition = 3;
+
+    public static final double kTransferPose =28;
     public static final double minPosition = 0;
   }
 }

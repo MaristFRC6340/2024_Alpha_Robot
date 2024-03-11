@@ -224,6 +224,13 @@ public final class Constants {
     public static final double speakerAimTXFar = 0;
     public static final double speakerAimTYFar = -9.9; // Original -3.2, Adjusted for dalton field tolerances
     public static double kTolerance = 2;
+    public static double kCloseForwardThreshold;
+    public static double kCloseTXTolerance;
+    public static double kCloseBackwardThreshold;
+    public static double kCloseBackwardThreshhold;
+    public static double kFarTXTolerance;
+    public static double kFarForwardThreshold;
+    public static double kFarBackwardThreshold;
 
     public static final double kPRot = .01;
   }

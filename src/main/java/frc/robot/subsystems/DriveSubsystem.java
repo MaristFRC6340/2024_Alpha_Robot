@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,6 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
     private NetworkTableEntry ledMode;
+    double lastTY = 0;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -297,6 +299,45 @@ public class DriveSubsystem extends SubsystemBase {
 
     rotOffset = offset;
   }
+/**
+ * Returns whether the robot is in or has recently passed within a valid shooting range
+ * @return
+ */
+  public boolean inShootingRange(boolean shoulderUp){
+    double currTY = ty.getDouble(0);
+        if(tx.exists() && ty.exists()) {
+          if(shoulderUp) {
+            if(currTY > LimelightConstants.kCloseForwardThreshold &&
+                lastTY <LimelightConstants.kCloseForwardThreshold &&
+                Math.abs(tx.getDouble(0)) < LimelightConstants.kCloseTXTolerance) 
+            {
+              return true;
+            }
+            else if (currTY < LimelightConstants.kCloseBackwardThreshold && 
+                lastTY > LimelightConstants.kCloseBackwardThreshhold && 
+                Math.abs(tx.getDouble(0))<LimelightConstants.kCloseTXTolerance)
+                {
+              return true;
+            }
+          }
+          else {
+            if(currTY > LimelightConstants.kFarForwardThreshold &&
+                lastTY <LimelightConstants.kFarForwardThreshold &&
+                Math.abs(tx.getDouble(0)) < LimelightConstants.kFarTXTolerance)
+            {
+              return true;
+            }
+            else if (currTY < LimelightConstants.kFarBackwardThreshold && 
+                lastTY > LimelightConstants.kFarBackwardThreshold && 
+                Math.abs(tx.getDouble(0))<LimelightConstants.kFarTXTolerance)
+                {
+              return true;
+            }
+          }
+          lastTY = currTY;
+        }
+		return false;
+  }
 
   /**
    * Returns the heading of the robot.
@@ -329,4 +370,6 @@ public class DriveSubsystem extends SubsystemBase {
       this.drive(0,0,0,false,false);
     });
   }
+
+
 }

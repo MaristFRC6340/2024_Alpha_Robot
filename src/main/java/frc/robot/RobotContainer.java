@@ -33,6 +33,7 @@ import frc.robot.Commands.LowLaunchNoteCommand;
 import frc.robot.Commands.OrthagonalizeCommand;
 import frc.robot.Commands.PointToAprilTagCommand;
 import frc.robot.Commands.TransferToIndexerCommand;
+import frc.robot.Commands.WaitUntilReadyCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
@@ -82,13 +83,10 @@ public class RobotContainer {
 
   private final PneumaticsSubsystem m_PneumaticsSubsystem = new PneumaticsSubsystem();
 
-  //private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
-
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private final TheBassSubsystem m_TheBassSubsystem = new TheBassSubsystem();
 
-  //private final JawSubsystem m_JawSubsystem = new JawSubsystem();
   // The driver's controller
   static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   //The actuator's controller
@@ -135,7 +133,7 @@ public class RobotContainer {
   //Trigger inShootingRange = new Trigger(()->m_robotDrive.inShootingRange(m_PneumaticsSubsystem.getShoulderRaised()));
 
   //Trigger that is true when the robot is able to shoot successfully
-  Trigger inShootingRange;
+  Trigger inShootingRange= new Trigger(() -> m_PneumaticsSubsystem.inShootingRange());
 
   //Limelight stuff:
 
@@ -185,28 +183,15 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-
-    // Configure default commands
-    // m_robotDrive.setDefaultCommand(
-    //     // The left stick controls translation of the robot.
-    //     // Turning is controlled by the X axis of the right stick.
-    //     new RunCommand(
-    //         () -> m_robotDrive.drive(
-    //             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-    //             -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-    //             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-    //             false, true),
-    //         m_robotDrive));
     
+
+    //Set Default Commands
     m_robotDrive.setDefaultCommand(
       new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), 1)
     );
-    
-    //m_TheBassSubsystem.setDefaultCommand(m_TheBassSubsystem.getHoldPositionCommand(() -> m_TheBassSubsystem.getPosition()));
-
-    inShootingRange = new Trigger(() -> m_PneumaticsSubsystem.inShootingRange());
 
 
+    //Network Table stuff for notifying drivers
     limTable = NetworkTableInstance.getDefault().getTable("limelight");
     ledMode = limTable.getEntry("ledMode");
   }
@@ -221,34 +206,13 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    // new JoystickButton(m_driverController, Button.kR1.value)
-    //     .whileTrue(new RunCommand(
-    //         () -> m_robotDrive.setX(),
-    //         m_robotDrive));
     
-    // Intake
-    // driverRTrigger.whileTrue(m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_driverController.getRightTriggerAxis()));
-    // driverLTrigger.whileTrue(m_IntakeSubsystem.getSetIntakePowerCommand(() -> -1 * m_driverController.getLeftTriggerAxis()));
-    // driverA.whileTrue(m_IntakeSubsystem.getIntakeCommand());
-    // driverB.whileTrue(m_IntakeSubsystem.getOuttakeCommand());
-    // driverX.whileTrue(m_IntakeSubsystem.getSlowIntakeCommand());
-    // driverY.whileTrue(m_IntakeSubsystem.getSlowOuttakeCommand());
 
-    // // Shooter
-    // shooterA.whileTrue(new SequentialCommandGroup(m_ShooterSubsystem.getPrepareLaunchCommand().withTimeout(2), new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)));
-
-    // // Indexer
-    // shooterB.whileTrue(m_IndexerSubsystem.getRunForwardCommand());
-    // shooterX.whileTrue(m_IndexerSubsystem.getRunBackwardsCommand());
-    
-    // shooterY.onTrue(m_PneumaticsSubsystem.getToggleTheBassCommand());
-
-    // shooterLBumper.whileTrue(m_PneumaticsSubsystem.getRaiseTheBassCommand());
-    // shooterRBumper.whileTrue(m_PneumaticsSubsystem.getDropTheBassCommand());
-
+    //Raise and lower the shooter tilt
     driverRBumper.onTrue(m_PneumaticsSubsystem.getRaiseShoulderCommand());
     driverLBumper.onTrue(m_PneumaticsSubsystem.getDropShoulderCommand());
     
+    //Manual intake control
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
       m_IndexerSubsystem.getSetPowerCommand(() -> m_actuatorController.getRightTriggerAxis()),
       m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_actuatorController.getRightTriggerAxis())
@@ -261,31 +225,39 @@ public class RobotContainer {
     
 
 
+      //Manually moving the bass up and down
     actuatorLBumper.whileTrue(m_TheBassSubsystem.getSetPowerCommand(-.3));
     actuatorRBumper.whileTrue(m_TheBassSubsystem.getSetPowerCommand(.3));
 
 
 
+    //Presets for moving the bass up and down
     actuatorDpadUp.whileTrue(m_TheBassSubsystem.daltonGoToRestCommand());
     actuatorDpadRight.whileTrue(m_TheBassSubsystem.daltonGoToTransferCommand());
+    actuatorDpadDown.whileTrue(m_TheBassSubsystem.daltonDropTheBassCommand());
+
+    //Moves the bass to the transfer position and runs the intake
     actuatorDpadLeft.whileTrue(new SequentialCommandGroup(
       m_TheBassSubsystem.daltonGoToTransferCommand(),
        new WaitCommand(.5),
         new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)));
-    actuatorDpadDown.whileTrue(m_TheBassSubsystem.daltonDropTheBassCommand());
-    //actuatorDpadDown.whileTrue(m_TheBassSubsystem.getDropTheBassCommand().withTimeout(.5));
 
 
+    //Intake from the source through the shooter
     actuatorX.whileTrue(new ParallelCommandGroup(
       m_ShooterSubsystem.getIntakeSourceCommand(),
       m_IndexerSubsystem.getSourceIntakeCommand()
     ));
 
+    //Manually spin up shooter
     actuatorB.whileTrue(m_ShooterSubsystem.getSetShooterPowerCommand(.7));
 
+    //Reset gyro
     driverDpadUp.onTrue(m_robotDrive.getResetHeadingCommand(m_driverController.getPOV()));
     
     //April Tags
+
+    //Close shot w/ sliding (probably gone soon)
     driverB.whileTrue(new SequentialCommandGroup(
       m_PneumaticsSubsystem.getRaiseShoulderCommand(),
       new ParallelDeadlineGroup(
@@ -297,6 +269,7 @@ public class RobotContainer {
         new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
 
 
+    //Angles towards april tag and slides forward/backwards to far shot. Beautiful and desireable command.
     driverStart.whileTrue(new SequentialCommandGroup(
       m_PneumaticsSubsystem.getDropShoulderCommand(),
       new ParallelDeadlineGroup(
@@ -307,6 +280,7 @@ public class RobotContainer {
         m_ShooterSubsystem.getPrepareLaunchCommand()),
         new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
 
+    //Slides to far shot position. Undesireable command, probably gone soon.
     driverY.whileTrue(new SequentialCommandGroup(
       m_PneumaticsSubsystem.getDropShoulderCommand(),
       new ParallelDeadlineGroup(
@@ -339,6 +313,12 @@ public class RobotContainer {
     inShootingRange.onFalse(
       new InstantCommand(() -> ledMode.setDouble(0))
     );
+
+    driverLTrigger.whileTrue(new SequentialCommandGroup(
+        m_ShooterSubsystem.getPrepareLaunchCommand().withTimeout(.1),
+        new WaitUntilReadyCommand(() -> m_PneumaticsSubsystem.getShoulderRaised()),
+        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
+    ).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
   } 
 
   /**

@@ -255,4 +255,8 @@ public final class Constants {
     public static final double kTransferPose =28;
     public static final double minPosition = 0;
   }
+
+  public static final class CelloConstants {
+    public static final int kCelloID = 40;
+  }
 }

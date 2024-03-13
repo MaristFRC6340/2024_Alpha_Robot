@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
@@ -7,6 +10,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.PneumaticsConstants;
 public class PneumaticsSubsystem extends SubsystemBase {
     
@@ -14,12 +18,19 @@ public class PneumaticsSubsystem extends SubsystemBase {
 
     private PneumaticsControlModule m_PneumaticsControlModule;
 
+    private NetworkTable limTable;
+    private NetworkTableEntry tx;
+    private NetworkTableEntry ty;
+
     private PneumaticHub hub;
-    
     public PneumaticsSubsystem() {
         hub = new PneumaticHub(1);
         m_PneumaticsControlModule = new PneumaticsControlModule(1);
-        shoulderSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kShoulderForwardChannelPort, PneumaticsConstants.kShoulderReverseChannelPort);     
+        shoulderSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kShoulderForwardChannelPort, PneumaticsConstants.kShoulderReverseChannelPort); 
+        
+        limTable = NetworkTableInstance.getDefault().getTable("limelight");
+        tx = limTable.getEntry("tx");
+        ty = limTable.getEntry("ty");
     }
 
 
@@ -65,4 +76,17 @@ public class PneumaticsSubsystem extends SubsystemBase {
     public void periodic() {
         //TODO: add code for toggling compressor here
     }
+
+
+    public boolean inShootingRange() {
+        if(getShoulderRaised()) {
+            return tx.exists() && ty.exists() &&
+             (Math.abs(ty.getDouble(0)-LimelightConstants.kTYInRangeClose)<LimelightConstants.kCloseInRangeTolerance)
+              && Math.abs(tx.getDouble(0)-LimelightConstants.kTXInRangeClose) < LimelightConstants.kCloseInRangeTolerance;
+        }
+        return tx.exists() && ty.exists() &&
+             (Math.abs(ty.getDouble(0)-LimelightConstants.kTYInRangeFar)<LimelightConstants.kFarInRangeTolerance)
+              && Math.abs(tx.getDouble(0)-LimelightConstants.kTXInRangeFar) < LimelightConstants.kFarInRangeTolerance;
+    }
+
 }

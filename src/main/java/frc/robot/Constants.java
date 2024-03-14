@@ -258,5 +258,6 @@ public final class Constants {
 
   public static final class CelloConstants {
     public static final int kCelloID = 40;
+    public static final int kAmpTicklerID = 41;
   }
 }

@@ -38,6 +38,8 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.AmpTicklerSubsystem;
+import frc.robot.subsystems.CelloSubsystem;
 //import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -86,6 +88,10 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private final TheBassSubsystem m_TheBassSubsystem = new TheBassSubsystem();
+
+  private final CelloSubsystem m_CelloSubsystem = new CelloSubsystem();
+
+  private final AmpTicklerSubsystem m_AmpTicklerSubsystem = new AmpTicklerSubsystem();
 
   // The driver's controller
   static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -319,6 +325,15 @@ public class RobotContainer {
         new WaitUntilReadyCommand(() -> m_PneumaticsSubsystem.getShoulderRaised()),
         new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
     ).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+
+
+    actuatorLeftY.whileTrue(m_CelloSubsystem.getSetPowerCommand(() -> {
+      return m_actuatorController.getLeftY() * .3;
+    }));
+
+    actuatorRightY.whileTrue(m_AmpTicklerSubsystem.getSetSpeedCommand(() -> {
+      return m_actuatorController.getRightY() * .3;
+    }));
   } 
 
   /**

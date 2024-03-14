@@ -39,19 +39,23 @@ public class LEDCommand extends Command{
     }
 
 
-    static LEDPattern blueFlashing(){
+    public static LEDPattern blueFlashing(){
         LEDState state = new LEDState(new Color[]{new Color(0,0,255), new Color(0,0,0)});
         return new LEDPattern(0, new LEDState[]{state});
     }
-    static LEDPattern redFlashing(){
+    public static LEDPattern redFlashing(){
         LEDState state = new LEDState(new Color[]{new Color(255,0,0), new Color(255,0,0)});
         return new LEDPattern(0, new LEDState[]{state});
     }
-
-    static LEDPattern orange(){
+    //note detected
+    public static LEDPattern orange(){
         LEDState state = new LEDState(new Color[]{new Color(255, 165, 0)});
         return new LEDPattern(0, new LEDState[]{state});
     }
 
+    public static LEDPattern ambientManatee(){
+        LEDState state = new LEDState(new Color[]{new Color(255,255,255), new Color(99,194,210), new Color(24,75,89), new Color(13,50,63)});
+        return LEDPattern.shiftPattern(state, 1);
+    }
 
 }

@@ -28,6 +28,7 @@ import frc.robot.Commands.DriveToCloseShotCommand;
 import frc.robot.Commands.DriveToFarShotCommand;
 import frc.robot.Commands.DriveToSourceCommand;
 import frc.robot.Commands.HighLaunchNoteCommand;
+import frc.robot.Commands.LEDCommand;
 import frc.robot.Commands.LaunchNoteCommand;
 import frc.robot.Commands.LowLaunchNoteCommand;
 import frc.robot.Commands.OrthagonalizeCommand;
@@ -45,6 +46,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.JawSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TheBassSubsystem;
@@ -147,6 +149,7 @@ public class RobotContainer {
   NetworkTableEntry ledMode;
 
   SendableChooser<Command> autoChooser;
+  LEDSubsystem leds = new LEDSubsystem(161);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -189,6 +192,8 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    LEDCommand ambientManatee = new LEDCommand(LEDCommand.ambientManatee(), leds);
     
 
     //Set Default Commands
@@ -328,11 +333,11 @@ public class RobotContainer {
 
 
     actuatorLeftY.whileTrue(m_CelloSubsystem.getSetPowerCommand(() -> {
-      return m_actuatorController.getLeftY() * .3;
+      return m_actuatorController.getLeftY() * .2;
     }));
 
     actuatorRightY.whileTrue(m_AmpTicklerSubsystem.getSetSpeedCommand(() -> {
-      return m_actuatorController.getRightY() * .3;
+      return m_actuatorController.getRightY() * .8;
     }));
   } 
 

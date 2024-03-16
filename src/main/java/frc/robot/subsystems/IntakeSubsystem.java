@@ -10,12 +10,16 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   private CANSparkMax roller;
+
+  private DigitalInput beamBreak;
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
     roller = new CANSparkMax(IntakeConstants.kRollerID, MotorType.kBrushless);
@@ -23,6 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
     roller.setSmartCurrentLimit(40);
 
     roller.setIdleMode(IdleMode.kBrake);
+
+    beamBreak = new DigitalInput(9);
   }
 
   public IntakeSubsystem(IndexerSubsystem m_IndexerSubsystem) {
@@ -32,6 +38,8 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    SmartDashboard.putBoolean("Intake Has Note", hasNote());
   }
 
   //Methods
@@ -172,5 +180,11 @@ public class IntakeSubsystem extends SubsystemBase {
     return this.runOnce(() -> {
       stop();
     });
+  }
+
+
+  //True means beam breaks see eachother, so we want true to be false because we want false when the beam breaks see eachother
+  public boolean hasNote() {
+    return !beamBreak.get();
   }
 }

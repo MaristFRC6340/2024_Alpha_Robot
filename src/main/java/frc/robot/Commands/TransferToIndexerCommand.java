@@ -46,4 +46,9 @@ public class TransferToIndexerCommand extends Command {
 
         //m_ShooterSubsystem.stop();
     }
+
+    @Override
+    public boolean isFinished() {
+        return m_IndexerSubsystem.hasNote() && !m_IntakeSubsystem.hasNote();
+    }
 }

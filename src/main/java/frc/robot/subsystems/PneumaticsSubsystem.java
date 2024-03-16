@@ -81,12 +81,12 @@ public class PneumaticsSubsystem extends SubsystemBase {
     public boolean inShootingRange() {
         if(getShoulderRaised()) {
             return tx.exists() && ty.exists() &&
-             (Math.abs(ty.getDouble(0)-LimelightConstants.kTYInRangeClose)<LimelightConstants.kCloseInRangeTolerance)
-              && Math.abs(tx.getDouble(0)-LimelightConstants.kTXInRangeClose) < LimelightConstants.kCloseInRangeTolerance;
+             (Math.abs(ty.getDouble(0)-LimelightConstants.kTYInRangeClose)<LimelightConstants.kCloseInRangeTYTolerance)
+              && Math.abs(tx.getDouble(0)-LimelightConstants.kTXInRangeClose) < LimelightConstants.kCloseInRangeTXTolerance;
         }
         return tx.exists() && ty.exists() &&
-             (Math.abs(ty.getDouble(0)-LimelightConstants.kTYInRangeFar)<LimelightConstants.kFarInRangeTolerance)
-              && Math.abs(tx.getDouble(0)-LimelightConstants.kTXInRangeFar) < LimelightConstants.kFarInRangeTolerance;
+             (Math.abs(ty.getDouble(0)-LimelightConstants.kTYInRangeFar)<LimelightConstants.kFarInRangeTYTolerance)
+              && Math.abs(tx.getDouble(0)-LimelightConstants.kTXInRangeFar) < LimelightConstants.kFarInRangeTXTolerance;
     }
 
 }

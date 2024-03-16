@@ -179,6 +179,12 @@ public class TheBassSubsystem extends SubsystemBase {
         });
     }
 
+    public Command getGoToAmpTransferPositonCommand() {
+        return this.runOnce(() -> {
+            goToPosition(BassConstants.kAmpTransferPosition);
+        });
+    }
+
 
     @Override
     public void periodic() {

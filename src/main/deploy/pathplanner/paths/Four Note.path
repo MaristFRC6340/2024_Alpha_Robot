@@ -1,0 +1,316 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.0361215409247806,
+        "y": 6.584452413812753
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6553822802804066,
+        "y": 6.8318259007356
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9279506267215076,
+        "y": 6.988072036530368
+      },
+      "prevControl": {
+        "x": 2.5738924222744743,
+        "y": 7.243011160213024
+      },
+      "nextControl": {
+        "x": 3.282008831168541,
+        "y": 6.7331329128477115
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8573527449912801,
+        "y": 6.315330725826886
+      },
+      "prevControl": {
+        "x": 2.401462456515521,
+        "y": 6.8888407519344765
+      },
+      "nextControl": {
+        "x": 1.3132430334670393,
+        "y": 5.7418206997192955
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.0552493007190256,
+        "y": 5.537695639760118
+      },
+      "prevControl": {
+        "x": 2.184057406027565,
+        "y": 5.638134185329226
+      },
+      "nextControl": {
+        "x": 3.321254820704687,
+        "y": 5.507028219983243
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8876609247184737,
+        "y": 4.922032183411116
+      },
+      "prevControl": {
+        "x": 2.861817286391755,
+        "y": 5.316911527874339
+      },
+      "nextControl": {
+        "x": 1.7449256325485543,
+        "y": 4.864173690851451
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.4314155275475033,
+        "y": 4.105706587195006
+      },
+      "prevControl": {
+        "x": 2.0025426250803675,
+        "y": 4.243740397982911
+      },
+      "nextControl": {
+        "x": 2.7105852518181246,
+        "y": 4.015855116803646
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.176705130671178,
+        "y": 4.950418344367543
+      },
+      "prevControl": {
+        "x": 2.717291665359527,
+        "y": 4.42419326045709
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.7000000000000002,
+      "rotationDegrees": -144.3285588334571,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 3.8,
+      "rotationDegrees": 160.34408289013794,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -177.1597137141132,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.55,
+      "rotationDegrees": 163.0155380766611,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 4.85,
+      "rotationDegrees": 171.70866191730448,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Start Shooter",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "StartShooter"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DropTheBass"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "First Launch",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "LaunchNote"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "First Pickup",
+      "waypointRelativePos": 0.6000000000000001,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "PickupAndTransfer"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DropTheBass"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Second Launch",
+      "waypointRelativePos": 2.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "LaunchNote"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Second Pickup",
+      "waypointRelativePos": 2.35,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "PickupAndTransfer"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DropTheBass"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Third Launch",
+      "waypointRelativePos": 3.8500000000000005,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "LaunchNote"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Third Pickup",
+      "waypointRelativePos": 4.3999999999999995,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "PickupAndTransfer"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DropTheBass"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fourth Launch",
+      "waypointRelativePos": 5.85,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "LaunchNote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 0.75,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 169.90434068845602,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

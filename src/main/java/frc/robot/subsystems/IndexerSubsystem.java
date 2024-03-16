@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -14,6 +16,8 @@ import frc.robot.Constants.IndexerConstants;
 public class IndexerSubsystem extends SubsystemBase {
     //private CANSparkMax preIndexerMotor;
     private CANSparkMax indexerMotor;
+
+    private DigitalInput proximity;
     public IndexerSubsystem() {
         // preIndexerMotor = new CANSparkMax(IndexerConstants.kPreIndexerID, MotorType.kBrushed);
         // preIndexerMotor.setSmartCurrentLimit(40);
@@ -22,6 +26,9 @@ public class IndexerSubsystem extends SubsystemBase {
         indexerMotor = new CANSparkMax(IndexerConstants.kIndexerID, MotorType.kBrushed);
         indexerMotor.setSmartCurrentLimit(40);
         indexerMotor.setIdleMode(IdleMode.kBrake);
+
+        proximity = new DigitalInput(8);
+
     }
 
     /**
@@ -98,5 +105,13 @@ public class IndexerSubsystem extends SubsystemBase {
         });
     }
 
+    public boolean hasNote() {
+        return !proximity.get();
+    }
+
+    @Override
+    public void periodic () {
+        SmartDashboard.putBoolean("Indexer Has Note", hasNote());
+    }
 
 }

@@ -12,6 +12,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.subsystems.LEDSubsystem.LEDPattern;
+import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -230,34 +233,75 @@ public final class Constants {
     public static double kCloseTXTolerance;
     public static double kCloseBackwardThreshold;
     public static double kCloseBackwardThreshhold;
-    public static double kFarTXTolerance;
-    public static double kFarForwardThreshold;
-    public static double kFarBackwardThreshold;
+    public static double kFarTXTolerance = 1;
+    public static double kFarForwardThreshold = -9;
+    public static double kFarBackwardThreshold = -10;
 
 
-    public static double kTYInRangeClose = 9;
+    public static double kTYInRangeClose = 10.5;
     public static double kTXInRangeClose = 0; 
-    public static double kCloseInRangeTolerance = 1;
-    public static double kTYInRangeFar = -9.9;
+    public static double kCloseInRangeTXTolerance = 3;
+    public static double kCloseInRangeTYTolerance = 1;
+    public static double kTYInRangeFar = -9.5;
     public static double kTXInRangeFar = 0;
-    public static double kFarInRangeTolerance = .5;
+    public static double kFarInRangeTYTolerance = 2;
+    public static double kFarInRangeTXTolerance = 3;
 
-    public static final double kPRot = .01;
+    public static final double kPRot = .02;
   }
 
   public static final class BassConstants {
     public static final int kBassID = 31;
     public static double kP = .5;
-    public static double kGroundIntakePosition = 58;
+    public static double kGroundIntakePosition = 62;
     public static double kAmpOuttake = 8.5;
-    public static double kRestPosition = 3;
-
-    public static final double kTransferPose =28;
+    public static double kRestPosition = 5.4;
+    public static double kAmpTransferPosition = 13.5;
+    public static final double kTransferPose = 30;
     public static final double minPosition = 0;
   }
 
   public static final class CelloConstants {
     public static final int kCelloID = 40;
     public static final int kAmpTicklerID = 41;
+
+    public static final double kTravelPosition = -18;
+    public static final double kOuttakePosition = -10;
+    public static final double kIntakeTransferPosition = 11.000;
+    public static double kOuttakeSpeed = .8;
+    public static double kSlowIntakeSpeed = -.3;
+  }
+
+  public static final class LEDConstants{
+    public static final int stripLength = 161;
+    public static final int pwmId = 9;
+    public static LEDPattern blueFlashing(){
+        LEDState state = new LEDState(stripLength).fill(new Color(0,0,255));
+      return LEDPattern.flashing(state, 100);
+    }
+    public static LEDPattern redFlashing(){
+        LEDState state = new LEDState(stripLength).fill(new Color(255,0,0));
+      return LEDPattern.flashing(state, 100);
+    }
+    //note detected
+    public static LEDPattern orange(){
+        LEDState state = new LEDState(stripLength).fill(new Color(255, 165, 0));
+        return new LEDPattern(0, new LEDState[]{state});
+    }
+
+    public static LEDPattern ambientManatee(){
+        LEDState state = new LEDState(stripLength).fillAlternating(new Color[]{new Color(255,255,255), new Color(99,194,210), new Color(24,75,89), new Color(13,50,63)});
+        return LEDPattern.shiftPattern(state, 100);
+    }
+
+    public static LEDPattern flashingGreen(){
+      LEDState state = new LEDState(stripLength).fill(new Color(0,255,0));
+      return LEDPattern.flashing(state, 100);
+    }
+    public static LEDPattern green(){
+      LEDState state = new LEDState(stripLength).fill(new Color(0,255,0));
+      return new LEDPattern(0,new LEDState[]{state});
+    }
+
   }
 }

@@ -28,6 +28,7 @@ import frc.robot.Commands.DriveToCloseShotCommand;
 import frc.robot.Commands.DriveToFarShotCommand;
 import frc.robot.Commands.DriveToSourceCommand;
 import frc.robot.Commands.HighLaunchNoteCommand;
+import frc.robot.Commands.IntakeUntilNoteCommand;
 import frc.robot.Commands.LEDCommand;
 import frc.robot.Commands.LaunchNoteCommand;
 import frc.robot.Commands.LowLaunchNoteCommand;
@@ -36,8 +37,10 @@ import frc.robot.Commands.PointToAprilTagCommand;
 import frc.robot.Commands.TransferToIndexerCommand;
 import frc.robot.Commands.WaitUntilReadyCommand;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.CelloConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.AmpTicklerSubsystem;
 import frc.robot.subsystems.CelloSubsystem;
@@ -186,6 +189,13 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("TransferNote", new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(1.5), m_TheBassSubsystem.getDropTheBassCommand()));
 
+
+    NamedCommands.registerCommand("PickupAndTransfer", new SequentialCommandGroup(
+      /**new IntakeUntilNoteCommand(m_IntakeSubsystem),**/
+      m_TheBassSubsystem.daltonGoToTransferCommand(),
+      new WaitCommand(.5),
+      new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(.75)
+    ));
     autoChooser = AutoBuilder.buildAutoChooser("default");
     SmartDashboard.putData("Auto Chooser", autoChooser);
      
@@ -193,9 +203,8 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    LEDCommand ambientManatee = new LEDCommand(LEDCommand.ambientManatee(), leds);
-    
-
+    LEDCommand ambientManatee = new LEDCommand(LEDConstants.ambientManatee(), leds);
+leds.setDefaultCommand(new LEDCommand(LEDConstants.redFlashing(), leds));
     //Set Default Commands
     m_robotDrive.setDefaultCommand(
       new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), 1)
@@ -218,50 +227,128 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     
+    //Old actuator Controls
+        //Manual intake control
+    // actuatorRTrigger.whileTrue(new ParallelCommandGroup(
+    //   m_IndexerSubsystem.getSetPowerCommand(() -> m_actuatorController.getRightTriggerAxis()),
+    //   m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_actuatorController.getRightTriggerAxis())
+    // ));
 
-    //Raise and lower the shooter tilt
-    driverRBumper.onTrue(m_PneumaticsSubsystem.getRaiseShoulderCommand());
-    driverLBumper.onTrue(m_PneumaticsSubsystem.getDropShoulderCommand());
+    // actuatorLTrigger.whileTrue(new ParallelCommandGroup(
+    //   m_IndexerSubsystem.getSetPowerCommand(() -> -1*m_actuatorController.getLeftTriggerAxis()),
+    //   m_IntakeSubsystem.getSetIntakePowerCommand(-.75)
+    //   ));
+
+    //   //Manually moving the bass up and down
+    // actuatorLBumper.whileTrue(m_TheBassSubsystem.getSetPowerCommand(-.3));
+    // actuatorRBumper.whileTrue(m_TheBassSubsystem.getSetPowerCommand(.3));
+
+
+
+    // //Presets for moving the bass up and down
+    // actuatorDpadUp.whileTrue(m_TheBassSubsystem.daltonGoToRestCommand());
+    // actuatorDpadRight.whileTrue(m_TheBassSubsystem.daltonGoToTransferCommand());
+    // actuatorDpadDown.whileTrue(m_TheBassSubsystem.daltonDropTheBassCommand());
+
+    // //Moves the bass to the transfer position and runs the intake
+    // actuatorDpadLeft.whileTrue(new SequentialCommandGroup(
+    //   m_TheBassSubsystem.daltonGoToTransferCommand(),
+    //    new WaitCommand(.5),
+    //     new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)));
+
+
+    // //Intake from the source through the shooter
+    // actuatorX.whileTrue(new ParallelCommandGroup(
+    //   m_ShooterSubsystem.getIntakeSourceCommand(),
+    //   m_IndexerSubsystem.getSourceIntakeCommand()
+    // ));
+
+    // //Manually spin up shooter
+    // actuatorB.whileTrue(m_ShooterSubsystem.getSetShooterPowerCommand(.7));
+
+    // //Raise and lower the shooter tilt
+     driverRBumper.onTrue(m_PneumaticsSubsystem.getRaiseShoulderCommand());
+     driverLBumper.onTrue(m_PneumaticsSubsystem.getDropShoulderCommand());
     
-    //Manual intake control
-    actuatorRTrigger.whileTrue(new ParallelCommandGroup(
-      m_IndexerSubsystem.getSetPowerCommand(() -> m_actuatorController.getRightTriggerAxis()),
-      m_IntakeSubsystem.getSetIntakePowerCommand(() -> m_actuatorController.getRightTriggerAxis())
-    ));
 
+
+    //Actuator Controls
+
+    //Moves the note from the shooter to the intake
     actuatorLTrigger.whileTrue(new ParallelCommandGroup(
-      m_IndexerSubsystem.getSetPowerCommand(() -> -1*m_actuatorController.getLeftTriggerAxis()),
-      m_IntakeSubsystem.getSetIntakePowerCommand(-.75)
-      ));
-    
-
-
-      //Manually moving the bass up and down
-    actuatorLBumper.whileTrue(m_TheBassSubsystem.getSetPowerCommand(-.3));
-    actuatorRBumper.whileTrue(m_TheBassSubsystem.getSetPowerCommand(.3));
-
-
-
-    //Presets for moving the bass up and down
-    actuatorDpadUp.whileTrue(m_TheBassSubsystem.daltonGoToRestCommand());
-    actuatorDpadRight.whileTrue(m_TheBassSubsystem.daltonGoToTransferCommand());
-    actuatorDpadDown.whileTrue(m_TheBassSubsystem.daltonDropTheBassCommand());
-
-    //Moves the bass to the transfer position and runs the intake
-    actuatorDpadLeft.whileTrue(new SequentialCommandGroup(
-      m_TheBassSubsystem.daltonGoToTransferCommand(),
-       new WaitCommand(.5),
-        new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)));
-
-
-    //Intake from the source through the shooter
-    actuatorX.whileTrue(new ParallelCommandGroup(
       m_ShooterSubsystem.getIntakeSourceCommand(),
-      m_IndexerSubsystem.getSourceIntakeCommand()
+      m_IndexerSubsystem.getIntakeFromSourceCommand(),
+      m_IntakeSubsystem.getOuttakeCommand(),
+      m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed)
     ));
 
-    //Manually spin up shooter
-    actuatorB.whileTrue(m_ShooterSubsystem.getSetShooterPowerCommand(.7));
+    //Moves the note from the intake to the shooter
+    actuatorRTrigger.whileTrue(new ParallelCommandGroup(
+      new IntakeUntilNoteCommand(m_IntakeSubsystem, m_IntakeSubsystem.hasNote()),
+      m_IndexerSubsystem.getRunForwardCommand(),
+      m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kOuttakeSpeed)
+    ));
+
+    //Sets amp to the outtake position then runs the outtake when held.
+    actuatorY.whileTrue(new SequentialCommandGroup(
+      m_CelloSubsystem.getSetPositionCommand(CelloConstants.kOuttakePosition),
+      new WaitCommand(.25),
+      m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kOuttakeSpeed)
+    ));
+
+    //Sets the amp to the transfer position and the intake to the amp transfer position, then transfers.
+    actuatorB.whileTrue(new SequentialCommandGroup(
+      m_TheBassSubsystem.getGoToAmpTransferPositonCommand(),
+      m_CelloSubsystem.getSetPositionCommand(CelloConstants.kIntakeTransferPosition),
+      new WaitCommand(2),
+      new ParallelCommandGroup(
+        m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed),
+        m_IntakeSubsystem.getSlowOuttakeCommand()
+      )));
+
+    //Sets the amp to short mode for field traversal
+    actuatorA.onTrue(m_CelloSubsystem.getSetPositionCommand(CelloConstants.kTravelPosition));
+
+
+
+    //Sets the bass to travelling/up/rest position
+    actuatorDpadUp.onTrue(m_TheBassSubsystem.daltonGoToRestCommand());
+
+    //Sets the bass to transfer position and transfers to the indexer
+    actuatorDpadLeft.whileTrue(
+      new SequentialCommandGroup(
+        m_TheBassSubsystem.daltonGoToTransferCommand(),
+        new WaitCommand(.25),
+        new ParallelCommandGroup(
+          m_IndexerSubsystem.getRunForwardCommand(),
+          m_IntakeSubsystem.getIntakeCommand()
+        )
+      )
+    );
+
+    //Sets the bass to intaking height
+    actuatorDpadDown.onTrue(
+      m_TheBassSubsystem.daltonDropTheBassCommand()
+    );
+
+    //Manual control for the bass and cello
+    actuatorLeftY.whileTrue(m_TheBassSubsystem.getSetPowerCommand(() -> m_actuatorController.getLeftY()));
+    actuatorRightY.whileTrue(m_CelloSubsystem.getSetPowerCommand(() -> {return m_actuatorController.getRightY()*.2;}));
+
+    //Toggles the shooter spinning up
+    actuatorRBumper.toggleOnTrue(m_ShooterSubsystem.getSetShooterPowerCommand(.7));
+
+    //Moves the ampersand towards outtake and spins the intake wheels out to get it unstuck
+    actuatorLBumper.whileTrue(new ParallelCommandGroup(
+      m_CelloSubsystem.getSetPowerCommand(.2),
+      m_IntakeSubsystem.getSlowOuttakeCommand()
+    ));
+
+    //End of Actuator Controls
+
+
+
+
 
     //Reset gyro
     driverDpadUp.onTrue(m_robotDrive.getResetHeadingCommand(m_driverController.getPOV()));
@@ -331,16 +418,7 @@ public class RobotContainer {
         new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
     ).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
 
-
-    actuatorLeftY.whileTrue(m_CelloSubsystem.getSetPowerCommand(() -> {
-      return m_actuatorController.getLeftY() * .2;
-    }));
-
-    actuatorRightY.whileTrue(m_AmpTicklerSubsystem.getSetSpeedCommand(() -> {
-      return m_actuatorController.getRightY() * .8;
-    }));
-  } 
-
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

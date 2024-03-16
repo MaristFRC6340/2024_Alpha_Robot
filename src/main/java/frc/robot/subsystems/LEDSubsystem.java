@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Commands.LEDCommand;
+import frc.robot.Constants.LEDConstants;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -14,8 +16,8 @@ public class LEDSubsystem extends SubsystemBase{
     AddressableLEDBuffer ledBuffer;
 
     public LEDSubsystem(int length){
-        ledStrip = new AddressableLED(9);
-        ledBuffer = new AddressableLEDBuffer(length);
+        ledStrip = new AddressableLED(LEDConstants.pwmId);
+        ledBuffer = new AddressableLEDBuffer(LEDConstants.stripLength);
         ledStrip.setLength(ledBuffer.getLength());
 
         // Set the data
@@ -66,6 +68,13 @@ public class LEDSubsystem extends SubsystemBase{
                 states[i] =curState;
                 curState=curState.shift(1);
             }
+            return new LEDPattern(restTime, states);
+        }
+
+        public static LEDPattern flashing(LEDState colorState, double restTime){
+            LEDState[] states = new LEDState[2];
+            states[0]=colorState;
+            states[1] = new LEDState(colorState.length).fill(new Color(0,0,0));
             return new LEDPattern(restTime, states);
         }
 

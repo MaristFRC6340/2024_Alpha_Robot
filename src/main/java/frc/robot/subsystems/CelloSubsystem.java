@@ -37,6 +37,8 @@ public class CelloSubsystem extends SubsystemBase{
         pidController.setI(0);
         pidController.setD(0);
 
+
+        pidController.setReference(0, ControlType.kPosition);
     }
 
     public void setPower(double power) {
@@ -76,4 +78,6 @@ public class CelloSubsystem extends SubsystemBase{
     public void periodic() {
         SmartDashboard.putNumber("Cello Position", relativeEncoder.getPosition());
     }
+
+
 }

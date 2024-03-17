@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2652160378027975,
-      "y": 5.537695639760118
+      "x": 1.5,
+      "y": 5.5
     },
-    "rotation": 179.50991903699267
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -18,13 +18,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "HighLaunchNote"
+                  "name": "HighLaunchNoteKeepShooterRunning"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 1.7
                 }
               }
             ]
@@ -39,7 +39,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Four Note"
+            "pathName": "Intake Note Two Sensor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchNoteKeepShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intake Note One Sensor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchNoteKeepShooter"
           }
         },
         {

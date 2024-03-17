@@ -257,7 +257,7 @@ public final class Constants {
     public static double kAmpOuttake = 8.5;
     public static double kRestPosition = 5.4;
     public static double kAmpTransferPosition = 13.5;
-    public static final double kTransferPose = 30;
+    public static final double kTransferPose = 36;
     public static final double minPosition = 0;
   }
 
@@ -283,11 +283,22 @@ public final class Constants {
         LEDState state = new LEDState(stripLength).fill(new Color(255,0,0));
       return LEDPattern.flashing(state, 100);
     }
+
+
     //note detected
     public static LEDPattern orange(){
         LEDState state = new LEDState(stripLength).fill(new Color(255, 165, 0));
         return new LEDPattern(0, new LEDState[]{state});
     }
+    public static LEDPattern blue(){
+      LEDState state = new LEDState(stripLength).fill(new Color(0, 0, 255));
+        return new LEDPattern(0, new LEDState[]{state});
+    }
+    public static LEDPattern red(){
+      LEDState state = new LEDState(stripLength).fill(new Color(255, 0, 0));
+        return new LEDPattern(0, new LEDState[]{state});
+    }
+    
 
     public static LEDPattern ambientManatee(){
         LEDState state = new LEDState(stripLength).fillAlternating(new Color[]{new Color(255,255,255), new Color(99,194,210), new Color(24,75,89), new Color(13,50,63)});

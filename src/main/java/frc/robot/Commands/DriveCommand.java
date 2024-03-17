@@ -61,7 +61,7 @@ public class DriveCommand extends Command{
         m_robotDrive.drive(
             MathUtil.applyDeadband(-leftY*speedControl, .06),
             MathUtil.applyDeadband(-leftX*speedControl, .06), 
-            MathUtil.applyDeadband(-rightX*speedControl, .06), fieldCentric, true);
+            MathUtil.applyDeadband(-rightX*speedControl, .06), fieldCentric, false);
     }
 
 

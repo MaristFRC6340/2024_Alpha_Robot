@@ -141,11 +141,14 @@ public class RobotContainer {
   Trigger driverDpadRight = new Trigger(() -> m_driverController.getPOV() == 90);
   Trigger driverDpadDown = new Trigger(() -> m_driverController.getPOV()==180);
 
+  Trigger noteDetected = new Trigger(()->m_IntakeSubsystem.hasNote());
+
   //Trigger inShootingRange = new Trigger(()->m_robotDrive.inShootingRange(m_PneumaticsSubsystem.getShoulderRaised()));
 
   //Trigger that is true when the robot is able to shoot successfully
   Trigger inShootingRange= new Trigger(() -> m_PneumaticsSubsystem.inShootingRange());
 
+  Trigger targetLocked = new Trigger(()-> SmartDashboard.getBoolean("inSpeakerRange", false));
   //Limelight stuff:
 
   NetworkTable limTable;
@@ -174,9 +177,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("BackwardsIndexer", m_IndexerSubsystem.getRunBackwardsCommand());
     NamedCommands.registerCommand("RunIntake", m_IntakeSubsystem.getIntakeCommand());
     NamedCommands.registerCommand("RunOuttake", m_IntakeSubsystem.getOuttakeCommand());
-    NamedCommands.registerCommand("RaiseTheBass", m_TheBassSubsystem.getGoToAmpOuttakeCommand().withTimeout(.5));
-    NamedCommands.registerCommand("TransferTheBass", m_TheBassSubsystem.getGoToTransferCommand().withTimeout(.5));
-    NamedCommands.registerCommand("DropTheBass", m_TheBassSubsystem.getDropTheBassCommand().withTimeout(1));
+    NamedCommands.registerCommand("RaiseTheBass", m_TheBassSubsystem.daltonGoToRestCommand().withTimeout(.5));
+    NamedCommands.registerCommand("TransferTheBass", m_TheBassSubsystem.daltonGoToTransferCommand().withTimeout(.5));
+    NamedCommands.registerCommand("DropTheBass", m_TheBassSubsystem.daltonDropTheBassCommand().withTimeout(1));
     NamedCommands.registerCommand("RaiseShoulder", m_PneumaticsSubsystem.getRaiseShoulderCommand().withTimeout(.5));
     NamedCommands.registerCommand("DropShoulder", m_PneumaticsSubsystem.getDropShoulderCommand().withTimeout(.5));
 
@@ -191,11 +194,14 @@ public class RobotContainer {
 
 
     NamedCommands.registerCommand("PickupAndTransfer", new SequentialCommandGroup(
-      /**new IntakeUntilNoteCommand(m_IntakeSubsystem),**/
+      new IntakeUntilNoteCommand(m_IntakeSubsystem, false),
       m_TheBassSubsystem.daltonGoToTransferCommand(),
       new WaitCommand(.5),
-      new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(.75)
+      new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)
     ));
+
+
+    NamedCommands.registerCommand("LaunchNoteKeepShooter", m_IndexerSubsystem.getRunForwardCommand().withTimeout(.4));
     autoChooser = AutoBuilder.buildAutoChooser("default");
     SmartDashboard.putData("Auto Chooser", autoChooser);
      
@@ -203,12 +209,25 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    LEDCommand ambientManatee = new LEDCommand(LEDConstants.ambientManatee(), leds);
-leds.setDefaultCommand(new LEDCommand(LEDConstants.redFlashing(), leds));
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+        if(alliance.get() == DriverStation.Alliance.Red){
+          leds.setDefaultCommand(new LEDCommand(LEDConstants.red(), leds));
+        }
+        else{
+          leds.setDefaultCommand(new LEDCommand(LEDConstants.blue(), leds));
+
+        }
+    }
+    else{
+      leds.setDefaultCommand(new LEDCommand(LEDConstants.ambientManatee(), leds));
+    }
     //Set Default Commands
     m_robotDrive.setDefaultCommand(
       new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), 1)
     );
+
+
 
 
     //Network Table stuff for notifying drivers
@@ -319,10 +338,7 @@ leds.setDefaultCommand(new LEDCommand(LEDConstants.redFlashing(), leds));
       new SequentialCommandGroup(
         m_TheBassSubsystem.daltonGoToTransferCommand(),
         new WaitCommand(.25),
-        new ParallelCommandGroup(
-          m_IndexerSubsystem.getRunForwardCommand(),
-          m_IntakeSubsystem.getIntakeCommand()
-        )
+        new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)
       )
     );
 
@@ -406,7 +422,8 @@ leds.setDefaultCommand(new LEDCommand(LEDConstants.redFlashing(), leds));
     
 
     inShootingRange.onTrue(
-      new InstantCommand(() -> ledMode.setDouble(3.0))
+      new ParallelCommandGroup(new InstantCommand(() -> ledMode.setDouble(3.0)), new LEDCommand(LEDConstants.flashingGreen(), leds)
+)
     );
     inShootingRange.onFalse(
       new InstantCommand(() -> ledMode.setDouble(0))
@@ -417,6 +434,9 @@ leds.setDefaultCommand(new LEDCommand(LEDConstants.redFlashing(), leds));
         new WaitUntilReadyCommand(() -> m_PneumaticsSubsystem.getShoulderRaised()),
         new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
     ).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+
+    targetLocked.whileTrue(new LEDCommand(LEDConstants.green(), leds));
+    noteDetected.whileTrue(new LEDCommand(LEDConstants.orange(), leds));
 
   }
   /**

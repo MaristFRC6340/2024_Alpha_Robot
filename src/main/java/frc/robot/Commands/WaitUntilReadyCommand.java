@@ -1,21 +1,25 @@
 package frc.robot.Commands;
 
 import java.util.function.BooleanSupplier;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class WaitUntilReadyCommand extends Command{
 
 	BooleanSupplier shoulderUp;
-	
+	DriveSubsystem m_DriveSubsystem;
+
 	NetworkTable limTable;
 	NetworkTableEntry ty;
 	NetworkTableEntry tx;
 	NetworkTableEntry ledMode;
-	public WaitUntilReadyCommand(BooleanSupplier shoulderUp) {
+	public WaitUntilReadyCommand(BooleanSupplier shoulderUp, DriveSubsystem m_DriveSubsystem) {
 
 		this.shoulderUp = shoulderUp;
 				
@@ -23,6 +27,8 @@ public class WaitUntilReadyCommand extends Command{
 		tx = limTable.getEntry("tx");
 		ty = limTable.getEntry("ty");
 		ledMode = limTable.getEntry("ledMode");
+
+		this.m_DriveSubsystem = m_DriveSubsystem;
 	}
 	
 	double lastTY;
@@ -68,39 +74,77 @@ public class WaitUntilReadyCommand extends Command{
 	 */
 	@Override
 	public boolean isFinished() {
+		
+		// if(tx.exists() && ty.exists()) {
+		// 	if(shoulderUp.getAsBoolean()) {
+		// 		if(currTY > LimelightConstants.kCloseForwardThreshold &&
+		// 				lastTY <LimelightConstants.kCloseForwardThreshold &&
+		// 				Math.abs(tx.getDouble(0)) < LimelightConstants.kCloseTXTolerance) 
+		// 		{
+		// 			return true;
+		// 		}
+		// 		else if (currTY < LimelightConstants.kCloseBackwardThreshold && 
+		// 				lastTY > LimelightConstants.kCloseBackwardThreshhold && 
+		// 				Math.abs(tx.getDouble(0))<LimelightConstants.kCloseTXTolerance)
+		// 				 {
+		// 			return true;
+		// 		}
+		// 	}
+		// 	else {
+		// 		if(currTY > LimelightConstants.kFarForwardThreshold &&
+		// 				lastTY <LimelightConstants.kFarForwardThreshold &&
+		// 				Math.abs(tx.getDouble(0)) < LimelightConstants.kFarTXTolerance)
+		// 		{
+		// 			return true;
+		// 		}
+		// 		else if (currTY < LimelightConstants.kFarBackwardThreshold && 
+		// 				lastTY > LimelightConstants.kFarBackwardThreshold && 
+		// 				Math.abs(tx.getDouble(0))<LimelightConstants.kFarTXTolerance)
+		// 				 {
+		// 			return true;
+		// 		}
+		// 	}
+		// 	lastTY = currTY;
+		// }
+		// return false;
+	
+
+
+
 		double currTY = ty.getDouble(0);
-		if(tx.exists() && ty.exists()) {
-			if(shoulderUp.getAsBoolean()) {
-				if(currTY > LimelightConstants.kCloseForwardThreshold &&
-						lastTY <LimelightConstants.kCloseForwardThreshold &&
-						Math.abs(tx.getDouble(0)) < LimelightConstants.kCloseTXTolerance) 
-				{
+		if(tx.exists()) {
+			if(!shoulderUp.getAsBoolean()) {
+				if(lastTY > LimelightConstants.kTYInRangeFar && ty.getDouble(0) < LimelightConstants.kTYInRangeFar) {
 					return true;
 				}
-				else if (currTY < LimelightConstants.kCloseBackwardThreshold && 
-						lastTY > LimelightConstants.kCloseBackwardThreshhold && 
-						Math.abs(tx.getDouble(0))<LimelightConstants.kCloseTXTolerance)
-						 {
+				else if(lastTY < LimelightConstants.kTYInRangeFar && ty.getDouble(0) > LimelightConstants.kTYInRangeFar) {
 					return true;
 				}
+				lastTY = currTY;
+				return false;
 			}
 			else {
-				if(currTY > LimelightConstants.kFarForwardThreshold &&
-						lastTY <LimelightConstants.kFarForwardThreshold &&
-						Math.abs(tx.getDouble(0)) < LimelightConstants.kFarTXTolerance)
-				{
+				if(lastTY > LimelightConstants.kTYInRangeClose && ty.getDouble(0) < LimelightConstants.kTYInRangeClose) {
 					return true;
 				}
-				else if (currTY < LimelightConstants.kFarBackwardThreshold && 
-						lastTY > LimelightConstants.kFarBackwardThreshold && 
-						Math.abs(tx.getDouble(0))<LimelightConstants.kFarTXTolerance)
-						 {
+				else if(lastTY < LimelightConstants.kTYInRangeClose && ty.getDouble(0) > LimelightConstants.kTYInRangeClose) {
 					return true;
 				}
+				lastTY = currTY;
+				return false;
 			}
-			lastTY = currTY;
 		}
+		lastTY = currTY;
 		return false;
 	}
+
 	
+	private double adjustForAngle(double d) {
+		Rotation2d gyro = m_DriveSubsystem.getGyroAngle();
+		double gyroAngle = gyro.getDegrees();
+
+		double gyroError = Math.abs(180-gyroAngle);
+
+		return d - .02*gyroError;
+	}
 }

@@ -12,17 +12,25 @@ import java.util.Random;
 
 public class LEDSubsystem extends SubsystemBase{
 
-    AddressableLED ledStrip;
+    AddressableLED ledStrip1;
+    AddressableLED ledStrip2;
+
     AddressableLEDBuffer ledBuffer;
 
     public LEDSubsystem(int length){
-        ledStrip = new AddressableLED(LEDConstants.pwmId);
+        ledStrip1 = new AddressableLED(LEDConstants.pwmId);
+        //ledStrip2 = new AddressableLED(LEDConstants.pwmId2);
+
         ledBuffer = new AddressableLEDBuffer(LEDConstants.stripLength);
-        ledStrip.setLength(ledBuffer.getLength());
+        ledStrip1.setLength(ledBuffer.getLength());
+        //ledStrip2.setLength(ledBuffer.getLength());
+
 
         // Set the data
-        ledStrip.setData(ledBuffer);
-        ledStrip.start();
+        ledStrip1.setData(ledBuffer);
+        ledStrip1.start();
+        // ledStrip2.setData(ledBuffer);
+        // ledStrip2.start();
     }
 
     /**
@@ -39,7 +47,8 @@ public class LEDSubsystem extends SubsystemBase{
             ledBuffer.setRGB(i, (int)(255*c.red), (int)(255*c.green), (int)(255*c.blue));
          }
          //Send the buffer data to the stirp
-         ledStrip.setData(ledBuffer);
+         ledStrip1.setData(ledBuffer);
+
     }
    public static class LEDPattern{
         public double restTime;

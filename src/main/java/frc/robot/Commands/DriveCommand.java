@@ -22,6 +22,8 @@ public class DriveCommand extends Command{
     DoubleSupplier getLeftY;
     DoubleSupplier getRightX;
 
+
+    DoubleSupplier speedSupplier;
     private double kP = .025;
 
     double turnPower = 0;
@@ -47,6 +49,16 @@ public class DriveCommand extends Command{
         addRequirements(drive);
     }
 
+    public DriveCommand(DriveSubsystem drive, DoubleSupplier getLeftX, DoubleSupplier getLeftY, DoubleSupplier getRightX, DoubleSupplier speedControlSupplier) {
+        this.getLeftX = getLeftX;
+        this.getLeftY = getLeftY;
+        this.getRightX = getRightX;
+        
+        this.speedSupplier = speedControlSupplier;
+        m_robotDrive = drive;
+        addRequirements(drive);
+    }
+
     double leftX = 0;
     double leftY = 0;
     double rightX = 0;
@@ -57,6 +69,10 @@ public class DriveCommand extends Command{
         leftX = getLeftX.getAsDouble();
         leftY = getLeftY.getAsDouble();
         rightX = getRightX.getAsDouble();
+
+        if(speedSupplier!=null) {
+            speedControl = speedSupplier.getAsDouble();
+        }
 
         m_robotDrive.drive(
             MathUtil.applyDeadband(-leftY*speedControl, .06),

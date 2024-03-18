@@ -30,7 +30,7 @@ public class DriveToCloseShotCommand extends Command{
 
     @Override
     public void initialize() {
-        ledMode.setDouble(3);
+        //ledMode.setDouble(3);
         tx = limTable.getEntry("tx");
         ty = limTable.getEntry("ty");
     }
@@ -63,7 +63,7 @@ public class DriveToCloseShotCommand extends Command{
 
     @Override
     public void end(boolean interrupted) {
-        ledMode.setDouble(1);
+        //ledMode.setDouble(1);
 
         m_DriveSubsystem.drive(0, 0, 0, false, false);
     }

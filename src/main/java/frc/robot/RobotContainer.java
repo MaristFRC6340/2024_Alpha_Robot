@@ -54,6 +54,7 @@ import frc.robot.subsystems.PneumaticsSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TheBassSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -148,7 +149,10 @@ public class RobotContainer {
   //Trigger that is true when the robot is able to shoot successfully
   Trigger inShootingRange= new Trigger(() -> m_PneumaticsSubsystem.inShootingRange());
 
-  Trigger targetLocked = new Trigger(()-> SmartDashboard.getBoolean("inSpeakerRange", false));
+  Trigger targetLocked = new Trigger(()-> SmartDashboard.getBoolean("TargetLocked", false));
+
+  Trigger green = new Trigger(()->!m_PneumaticsSubsystem.inShootingRange() && SmartDashboard.getBoolean("TargetLocked", false));
+  Trigger greenFlashing = new Trigger(()->SmartDashboard.getBoolean("TargetLocked", false) && m_PneumaticsSubsystem.inShootingRange());
   //Limelight stuff:
 
   NetworkTable limTable;
@@ -156,6 +160,8 @@ public class RobotContainer {
 
   SendableChooser<Command> autoChooser;
   LEDSubsystem leds = new LEDSubsystem(161);
+
+  private double speedControl = 1;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -224,7 +230,7 @@ public class RobotContainer {
     }
     //Set Default Commands
     m_robotDrive.setDefaultCommand(
-      new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), 1)
+      new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), () -> speedControl)
     );
 
 
@@ -298,21 +304,19 @@ public class RobotContainer {
       m_ShooterSubsystem.getIntakeSourceCommand(),
       m_IndexerSubsystem.getIntakeFromSourceCommand(),
       m_IntakeSubsystem.getOuttakeCommand(),
-      m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed)
+      m_AmpTicklerSubsystem.getSetSpeedCommand(-.8)
     ));
 
     //Moves the note from the intake to the shooter
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
-      new IntakeUntilNoteCommand(m_IntakeSubsystem, m_IntakeSubsystem.hasNote()),
+      new IntakeUntilNoteCommand(m_IntakeSubsystem, () -> m_IntakeSubsystem.hasNote()),
       m_IndexerSubsystem.getRunForwardCommand(),
       m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kOuttakeSpeed)
     ));
 
     //Sets amp to the outtake position then runs the outtake when held.
     actuatorY.whileTrue(new SequentialCommandGroup(
-      m_CelloSubsystem.getSetPositionCommand(CelloConstants.kOuttakePosition),
-      new WaitCommand(.25),
-      m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kOuttakeSpeed)
+      m_CelloSubsystem.getSetPositionCommand(CelloConstants.kOuttakePosition)
     ));
 
     //Sets the amp to the transfer position and the intake to the amp transfer position, then transfers.
@@ -348,7 +352,7 @@ public class RobotContainer {
     );
 
     //Manual control for the bass and cello
-    actuatorLeftY.whileTrue(m_TheBassSubsystem.getSetPowerCommand(() -> m_actuatorController.getLeftY()));
+    actuatorLeftY.whileTrue(m_TheBassSubsystem.getSetPowerCommand(() -> m_actuatorController.getLeftY()*.4));
     actuatorRightY.whileTrue(m_CelloSubsystem.getSetPowerCommand(() -> {return m_actuatorController.getRightY()*.2;}));
 
     //Toggles the shooter spinning up
@@ -356,9 +360,16 @@ public class RobotContainer {
 
     //Moves the ampersand towards outtake and spins the intake wheels out to get it unstuck
     actuatorLBumper.whileTrue(new ParallelCommandGroup(
-      m_CelloSubsystem.getSetPowerCommand(.2),
+      m_CelloSubsystem.getSetPowerCommand(-.2),
       m_IntakeSubsystem.getSlowOuttakeCommand()
     ));
+
+    //Shoot on the fly, doesn't work rn
+    // actuatorX.whileTrue(new WaitUntilReadyCommand(() -> m_PneumaticsSubsystem.getShoulderRaised(), m_robotDrive)
+    // .andThen(new InstantCommand(() -> m_IndexerSubsystem.setPower(.4)).withTimeout(.75))
+    // .handleInterrupt(() -> m_IndexerSubsystem.setPower(0)));
+
+    actuatorX.whileTrue(new ParallelCommandGroup(m_ShooterSubsystem.getSetShooterPowerCommand(()->.2), m_IndexerSubsystem.getSetPowerCommand(()->.1)));
 
     //End of Actuator Controls
 
@@ -374,68 +385,47 @@ public class RobotContainer {
     //Close shot w/ sliding (probably gone soon)
     driverB.whileTrue(new SequentialCommandGroup(
       m_PneumaticsSubsystem.getRaiseShoulderCommand(),
-      new ParallelDeadlineGroup(
-        new ParallelCommandGroup(
-          new WaitCommand(2),
-          new SequentialCommandGroup( new DriveToCloseShotCommand(m_robotDrive).withTimeout(2))
-        ), 
-        m_ShooterSubsystem.getPrepareLaunchCommand()),
-        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+      new DriveToCloseShotCommand(m_robotDrive)
+    ));
 
 
     //Angles towards april tag and slides forward/backwards to far shot. Beautiful and desireable command.
     driverStart.whileTrue(new SequentialCommandGroup(
       m_PneumaticsSubsystem.getDropShoulderCommand(),
-      new ParallelDeadlineGroup(
-        new ParallelCommandGroup(
-          new WaitCommand(2),
-          new SequentialCommandGroup( new AimAndDriveFarCommand(m_robotDrive).withTimeout(2))
-        ), 
-        m_ShooterSubsystem.getPrepareLaunchCommand()),
-        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+      new AimAndDriveFarCommand(m_robotDrive)
+    ));
 
     //Slides to far shot position. Undesireable command, probably gone soon.
-    driverY.whileTrue(new SequentialCommandGroup(
-      m_PneumaticsSubsystem.getDropShoulderCommand(),
-      new ParallelDeadlineGroup(
-        new ParallelCommandGroup(
-          new WaitCommand(2),
-          new SequentialCommandGroup( new DriveToFarShotCommand(m_robotDrive))
-        ), 
-        m_ShooterSubsystem.getPrepareLaunchCommand()),
-        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+
+    driverY.whileTrue(new SequentialCommandGroup(m_PneumaticsSubsystem.getDropShoulderCommand(),new DriveToCloseShotCommand(m_robotDrive)));
+
 
     driverX.whileTrue(m_robotDrive.getSetXCommand());
     driverA.whileTrue(new PointToAprilTagCommand(m_robotDrive));
 
-    //New Stuff that Cole added
-    // driverRTrigger.whileTrue(new DriveTargetLockCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), .3));
-    // driverRTrigger.whileTrue(m_ShooterSubsystem.getPrepareLaunchCommand().handleInterrupt(()->m_ShooterSubsystem.stop()));
-    // driverRTrigger.and(inShootingRange).onTrue(new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem));
 
+    driverRTrigger.whileTrue(Commands.startEnd(() -> speedControl=.3, () -> speedControl = 1));
 
-    driverDpadDown.toggleOnTrue(new DriveTargetLockCommand(
+    driverLTrigger.toggleOnTrue(new DriveTargetLockCommand(
       m_robotDrive,
      () -> m_driverController.getLeftX(),
     () -> m_driverController.getLeftY(),
-    () -> m_driverController.getRightX()));
+    () -> m_driverController.getRightX(),
+    () -> speedControl));
     
 
-    inShootingRange.onTrue(
-      new ParallelCommandGroup(new InstantCommand(() -> ledMode.setDouble(3.0)), new LEDCommand(LEDConstants.flashingGreen(), leds)
-)
-    );
-    inShootingRange.onFalse(
-      new InstantCommand(() -> ledMode.setDouble(0))
-    );
 
-    driverLTrigger.whileTrue(new SequentialCommandGroup(
-        m_ShooterSubsystem.getPrepareLaunchCommand().withTimeout(.1),
-        new WaitUntilReadyCommand(() -> m_PneumaticsSubsystem.getShoulderRaised()),
-        new LaunchNoteCommand(m_ShooterSubsystem, m_IndexerSubsystem)
-    ).handleInterrupt(() -> {m_ShooterSubsystem.stop();}));
+    greenFlashing.whileTrue( new LEDCommand(LEDConstants.flashingGreen(), leds));
+    green.whileTrue(new LEDCommand(LEDConstants.green(), leds));
 
-    targetLocked.whileTrue(new LEDCommand(LEDConstants.green(), leds));
+
+
+    
+    //(driverLTrigger.and(inShootingRange)).onTrue(m_IndexerSubsystem.getRunForwardCommand().withTimeout(1));
+
+    
+
+
     noteDetected.whileTrue(new LEDCommand(LEDConstants.orange(), leds));
 
   }

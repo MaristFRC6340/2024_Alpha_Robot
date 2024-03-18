@@ -31,6 +31,7 @@ public class DriveTargetLockCommand extends Command{
 
     private boolean fieldCentric = true;
 
+    private DoubleSupplier speedSupplier;
     public DriveTargetLockCommand(DriveSubsystem drive, DoubleSupplier getLeftX, DoubleSupplier getLeftY, DoubleSupplier getRightX) {
         this.getLeftX = getLeftX;
         this.getLeftY = getLeftY;
@@ -55,6 +56,19 @@ public class DriveTargetLockCommand extends Command{
         addRequirements(drive);
     }
 
+    public DriveTargetLockCommand(DriveSubsystem drive, DoubleSupplier getLeftX, DoubleSupplier getLeftY, DoubleSupplier getRightX, DoubleSupplier speedSupplier) {
+        this.getLeftX = getLeftX;
+        this.getLeftY = getLeftY;
+        this.getRightX = getRightX;
+
+        this.limTable = NetworkTableInstance.getDefault().getTable("limelight");
+        this.tX = limTable.getEntry("ty");
+        
+        this.speedSupplier = speedSupplier;
+        m_robotDrive = drive;
+        addRequirements(drive);
+    }
+
     double leftX = 0;
     double leftY = 0;
     double rightX = 0;
@@ -69,15 +83,24 @@ public class DriveTargetLockCommand extends Command{
         if(tX.exists()){
             rightX = limTable.getEntry("tx").getDouble(0)-LimelightConstants.speakerAimTXFar;
         }
+
+        if(speedSupplier != null) {
+            speedControl = speedSupplier.getAsDouble();
+        }
+
         m_robotDrive.drive(
             MathUtil.applyDeadband(-leftY*speedControl, .06),
             MathUtil.applyDeadband(-leftX*speedControl, .06), 
             MathUtil.applyDeadband(-rightX*LimelightConstants.kPRot, .06), fieldCentric, false);
+        SmartDashboard.putBoolean("TargetLocked", true);
+
     }
 
 
     @Override
     public void end(boolean interrupted) {
+        SmartDashboard.putBoolean("TargetLocked", false);
+
         m_robotDrive.drive(0, 0, 0, false, false);
     }
 }

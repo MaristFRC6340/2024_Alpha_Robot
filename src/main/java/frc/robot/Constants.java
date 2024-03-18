@@ -233,7 +233,7 @@ public final class Constants {
     public static double kCloseTXTolerance;
     public static double kCloseBackwardThreshold;
     public static double kCloseBackwardThreshhold;
-    public static double kFarTXTolerance = 1;
+    public static double kFarTXTolerance = 4;
     public static double kFarForwardThreshold = -9;
     public static double kFarBackwardThreshold = -10;
 
@@ -241,11 +241,11 @@ public final class Constants {
     public static double kTYInRangeClose = 10.5;
     public static double kTXInRangeClose = 0; 
     public static double kCloseInRangeTXTolerance = 3;
-    public static double kCloseInRangeTYTolerance = 1;
+    public static double kCloseInRangeTYTolerance = 3;
     public static double kTYInRangeFar = -9.5;
     public static double kTXInRangeFar = 0;
     public static double kFarInRangeTYTolerance = 2;
-    public static double kFarInRangeTXTolerance = 3;
+    public static double kFarInRangeTXTolerance = 4;
 
     public static final double kPRot = .02;
   }
@@ -275,6 +275,8 @@ public final class Constants {
   public static final class LEDConstants{
     public static final int stripLength = 161;
     public static final int pwmId = 9;
+    public static final int pwmId2 = 8;
+
     public static LEDPattern blueFlashing(){
         LEDState state = new LEDState(stripLength).fill(new Color(0,0,255));
       return LEDPattern.flashing(state, 100);
@@ -287,7 +289,7 @@ public final class Constants {
 
     //note detected
     public static LEDPattern orange(){
-        LEDState state = new LEDState(stripLength).fill(new Color(255, 165, 0));
+        LEDState state = new LEDState(stripLength).fill(new Color(255, 68, 51));
         return new LEDPattern(0, new LEDState[]{state});
     }
     public static LEDPattern blue(){

@@ -1,5 +1,7 @@
 package frc.robot.Commands;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -13,6 +15,13 @@ public class IntakeUntilNoteCommand extends Command{
         addRequirements(intake);
 
         hasNoteInitial=initalStateHasNote;
+    }
+
+    public IntakeUntilNoteCommand(IntakeSubsystem intake, BooleanSupplier initalStateHasNote) {
+        m_IntakeSubsystem = intake;
+        addRequirements(intake);
+
+        hasNoteInitial = initalStateHasNote.getAsBoolean();
     }
 
     @Override

@@ -31,6 +31,7 @@ import frc.robot.Commands.HighLaunchNoteCommand;
 import frc.robot.Commands.IntakeUntilNoteCommand;
 import frc.robot.Commands.LEDCommand;
 import frc.robot.Commands.LaunchNoteCommand;
+import frc.robot.Commands.LowLatencyDriveTargetLockCommand;
 import frc.robot.Commands.LowLaunchNoteCommand;
 import frc.robot.Commands.OrthagonalizeCommand;
 import frc.robot.Commands.PointToAprilTagCommand;
@@ -99,6 +100,7 @@ public class RobotContainer {
 
   private final AmpTicklerSubsystem m_AmpTicklerSubsystem = new AmpTicklerSubsystem();
 
+  boolean isTargetLocked = false;
   // The driver's controller
   static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   //The actuator's controller
@@ -204,7 +206,7 @@ public class RobotContainer {
       m_TheBassSubsystem.daltonGoToTransferCommand(),
       new WaitCommand(.5),
       new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)
-    ));
+    ).withTimeout(4));
 
 
     NamedCommands.registerCommand("LaunchNoteKeepShooter", m_IndexerSubsystem.getRunForwardCommand().withTimeout(.4));
@@ -390,14 +392,11 @@ public class RobotContainer {
 
 
     //Angles towards april tag and slides forward/backwards to far shot. Beautiful and desireable command.
-    driverStart.whileTrue(new SequentialCommandGroup(
-      m_PneumaticsSubsystem.getDropShoulderCommand(),
-      new AimAndDriveFarCommand(m_robotDrive)
-    ));
+
 
     //Slides to far shot position. Undesireable command, probably gone soon.
 
-    driverY.whileTrue(new SequentialCommandGroup(m_PneumaticsSubsystem.getDropShoulderCommand(),new DriveToCloseShotCommand(m_robotDrive)));
+    driverY.whileTrue(new SequentialCommandGroup(m_PneumaticsSubsystem.getDropShoulderCommand(),new DriveToFarShotCommand(m_robotDrive)));
 
 
     driverX.whileTrue(m_robotDrive.getSetXCommand());
@@ -412,6 +411,9 @@ public class RobotContainer {
     () -> m_driverController.getLeftY(),
     () -> m_driverController.getRightX(),
     () -> speedControl));
+
+
+
     
 
 

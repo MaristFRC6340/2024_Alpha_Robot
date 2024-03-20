@@ -223,12 +223,21 @@ public final class Constants {
     public static final double kPY = .03;
 
     public static final double speakerAimTXClose = 0;
+
+    //JOHN THIS ONE
+    //for close drive to
     public static final double speakerAimTYClose = 9;
     public static final double speakerAimTXFar = 0;
-    public static final double speakerAimTYFar = -9.9; // Original -3.2, Adjusted for dalton field tolerances
-    public static double kTolerance = 2;
+
+    //JOHN THIS ONE
+    //for far drive to
+    public static final double speakerAimTYFar = -6.7; // Original -3.2, Adjusted for dalton field tolerances
+
+
+    public static double kTolerance = 1;
 
     
+    //For potential shoot on the move, not currently in use
     public static double kCloseForwardThreshold;
     public static double kCloseTXTolerance;
     public static double kCloseBackwardThreshold;
@@ -238,22 +247,28 @@ public final class Constants {
     public static double kFarBackwardThreshold = -10;
 
 
-    public static double kTYInRangeClose = 10.5;
+    //Used in pneumatics subsystem to determine whether or not the shooter is in range
+
+    //JOHN THIS ONE
+    //for close indicators
+    public static double kTYInRangeClose = 9;
     public static double kTXInRangeClose = 0; 
     public static double kCloseInRangeTXTolerance = 3;
-    public static double kCloseInRangeTYTolerance = 3;
-    public static double kTYInRangeFar = -9.5;
+    public static double kCloseInRangeTYTolerance = 2;
+
+    //JOHN THIS ONE
+    //for far indicators
+    public static double kTYInRangeFar = -6.7;
     public static double kTXInRangeFar = 0;
     public static double kFarInRangeTYTolerance = 2;
-    public static double kFarInRangeTXTolerance = 4;
-
+    public static double kFarInRangeTXTolerance = 3;
     public static final double kPRot = .02;
   }
 
   public static final class BassConstants {
     public static final int kBassID = 31;
     public static double kP = .5;
-    public static double kGroundIntakePosition = 62;
+    public static double kGroundIntakePosition = 62.5;
     public static double kAmpOuttake = 8.5;
     public static double kRestPosition = 5.4;
     public static double kAmpTransferPosition = 13.5;

@@ -231,7 +231,7 @@ public final class Constants {
 
     //JOHN THIS ONE
     //for far drive to
-    public static final double speakerAimTYFar = -6.7; // Original -3.2, Adjusted for dalton field tolerances
+    public static final double speakerAimTYFar = -7.7; // Original -3.2, Adjusted for dalton field tolerances
 
 
     public static double kTolerance = 1;
@@ -258,7 +258,7 @@ public final class Constants {
 
     //JOHN THIS ONE
     //for far indicators
-    public static double kTYInRangeFar = -6.7;
+    public static double kTYInRangeFar = -7.7;
     public static double kTXInRangeFar = 0;
     public static double kFarInRangeTYTolerance = 2;
     public static double kFarInRangeTXTolerance = 3;
@@ -272,15 +272,14 @@ public final class Constants {
     public static double kAmpOuttake = 8.5;
     public static double kRestPosition = 5.4;
     public static double kAmpTransferPosition = 13.5;
-    public static final double kTransferPose = 36;
+    public static final double kTransferPose = 34;//was 36
     public static final double minPosition = 0;
   }
 
   public static final class CelloConstants {
     public static final int kCelloID = 40;
     public static final int kAmpTicklerID = 41;
-
-    public static final double kTravelPosition = -18;
+    public static final double kTravelPosition = -16;//was -18
     public static final double kOuttakePosition = -10;
     public static final double kIntakeTransferPosition = 11.000;
     public static double kOuttakeSpeed = .8;

@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -35,10 +36,14 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Shooter Vel", lowerShooter.getEncoder().getVelocity());
+    SmartDashboard.putBoolean("ShooterSpun", spunUp());
   }
 
   //Methods
-
+  public boolean spunUp(){
+    return lowerShooter.getEncoder().getVelocity() > 3800;
+  }
   /**
    * Sets the shooter to a desired power
    * @param power

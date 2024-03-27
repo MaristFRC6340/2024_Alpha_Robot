@@ -150,6 +150,7 @@ public class RobotContainer {
 
   //Trigger that is true when the robot is able to shoot successfully
   Trigger inShootingRange= new Trigger(() -> m_PneumaticsSubsystem.inShootingRange());
+  //Trigger inYZoneRange
 
   Trigger targetLocked = new Trigger(()-> SmartDashboard.getBoolean("TargetLocked", false));
 
@@ -164,6 +165,7 @@ public class RobotContainer {
   LEDSubsystem leds = new LEDSubsystem(161);
 
   private double speedControl = 1;
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -171,9 +173,9 @@ public class RobotContainer {
 
     
     //Register Named Commands
-    NamedCommands.registerCommand("HighLaunchNoteKeepShooterRunning", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem, true));
+    NamedCommands.registerCommand("HighLaunchNoteKeepShooterRunning", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem, true).withTimeout(2));
 
-    NamedCommands.registerCommand("HighLaunchNote", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
+    NamedCommands.registerCommand("HighLaunchNote", new HighLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem).withTimeout(2));
     NamedCommands.registerCommand("LowLaunchNote", new LowLaunchNoteCommand(m_PneumaticsSubsystem, m_ShooterSubsystem, m_IndexerSubsystem));
     NamedCommands.registerCommand("StartShooter", m_ShooterSubsystem.getPrepareLaunchCommand());
     NamedCommands.registerCommand("StopShooter", m_ShooterSubsystem.getStopShooterCommand());
@@ -234,6 +236,9 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
       new DriveCommand(m_robotDrive, () -> m_driverController.getLeftX(), () -> m_driverController.getLeftY(), () -> m_driverController.getRightX(), () -> speedControl)
     );
+
+    SmartDashboard.putBoolean("SlowMode", false);
+    SmartDashboard.putBoolean("ShooterSpun", false);
 
 
 
@@ -311,7 +316,7 @@ public class RobotContainer {
 
     //Moves the note from the intake to the shooter
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
-      new IntakeUntilNoteCommand(m_IntakeSubsystem, () -> m_IntakeSubsystem.hasNote()),
+      new IntakeUntilNoteCommand(m_IntakeSubsystem, m_IntakeSubsystem.hasNote()),//maybe try non boolean suppliet
       m_IndexerSubsystem.getRunForwardCommand(),
       m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kOuttakeSpeed)
     ));
@@ -344,7 +349,8 @@ public class RobotContainer {
       new SequentialCommandGroup(
         m_TheBassSubsystem.daltonGoToTransferCommand(),
         new WaitCommand(.25),
-        new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)
+        new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)/** ,
+        m_TheBassSubsystem.getGoToAmpTransferPositonCommand()Remove match 63 Carrollton**/
       )
     );
 
@@ -371,8 +377,9 @@ public class RobotContainer {
     // .andThen(new InstantCommand(() -> m_IndexerSubsystem.setPower(.4)).withTimeout(.75))
     // .handleInterrupt(() -> m_IndexerSubsystem.setPower(0)));
 
-    actuatorX.whileTrue(new ParallelCommandGroup(m_ShooterSubsystem.getSetShooterPowerCommand(()->.2), m_IndexerSubsystem.getSetPowerCommand(()->.1)));
+    //actuatorX.whileTrue(new ParallelCommandGroup(m_ShooterSubsystem.getSetShooterPowerCommand(()->.2), m_IndexerSubsystem.getSetPowerCommand(()->.1)));
 
+    actuatorX.onTrue(m_CelloSubsystem.getSetPositionCommand(0));
     //End of Actuator Controls
 
 
@@ -403,7 +410,9 @@ public class RobotContainer {
     driverA.whileTrue(new PointToAprilTagCommand(m_robotDrive));
 
 
-    driverRTrigger.whileTrue(Commands.startEnd(() -> speedControl=.3, () -> speedControl = 1));
+    driverRTrigger.whileTrue(Commands.startEnd(() -> {speedControl=.3;SmartDashboard.putBoolean("SlowMode", true);}, () -> {speedControl = 1;SmartDashboard.putBoolean("SlowMode", false);}));
+
+
 
     driverLTrigger.toggleOnTrue(new DriveTargetLockCommand(
       m_robotDrive,
@@ -411,6 +420,7 @@ public class RobotContainer {
     () -> m_driverController.getLeftY(),
     () -> m_driverController.getRightX(),
     () -> speedControl));
+
 
 
 

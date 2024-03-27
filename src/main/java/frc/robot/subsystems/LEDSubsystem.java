@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.LEDCommand;
 import frc.robot.Constants.LEDConstants;
 
@@ -14,6 +17,7 @@ public class LEDSubsystem extends SubsystemBase{
 
     AddressableLED ledStrip;
     AddressableLEDBuffer ledBuffer;
+    Trigger flashRed = new Trigger(()-> SmartDashboard.getBoolean("FLASH RED", false));
 
     public LEDSubsystem(int length){
         ledStrip = new AddressableLED(LEDConstants.pwmId);
@@ -23,8 +27,13 @@ public class LEDSubsystem extends SubsystemBase{
         // Set the data
         ledStrip.setData(ledBuffer);
         ledStrip.start();
+        SmartDashboard.putBoolean("FLASH RED", false);
+        flashRed.onTrue(new LEDCommand(LEDConstants.redFlashing(), this).withTimeout(3));
     }
 
+    @Override
+    public void periodic(){
+    }
     /**
      * Takes in a LED State Object and updates the led strip to match the state
      * @param colors

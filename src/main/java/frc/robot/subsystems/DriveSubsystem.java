@@ -11,23 +11,29 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.utils.SwerveUtils;
@@ -73,7 +79,11 @@ public class DriveSubsystem extends SubsystemBase {
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
     private NetworkTableEntry ledMode;
+
+
+    private NetworkTableEntry botpose;
     double lastTY = 0;
+
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -85,15 +95,25 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
       });
+    // SwerveDrivePoseEstimator m_odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(-m_gyro.getAngle()),  new SwerveModulePosition[] {
+    //       m_frontLeft.getPosition(),
+    //       m_frontRight.getPosition(),
+    //       m_rearLeft.getPosition(),
+    //       m_rearRight.getPosition()
+    //   }, new Pose2d(2, 5.5, new Rotation2d(180)));
+
+      
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
 
      limTable = NetworkTableInstance.getDefault().getTable("limelight");
-        ledMode = limTable.getEntry("ledMode");
-        tx = limTable.getEntry("tx");
-        ty = limTable.getEntry("ty");
+     botpose = limTable.getEntry("botpose_wpiblue");
+      ledMode = limTable.getEntry("ledMode");
+      tx = limTable.getEntry("tx");
+      ty = limTable.getEntry("ty");
 
+    //m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, .1));
 
     AutoBuilder.configureHolonomic(
       this::getPose,
@@ -102,7 +122,7 @@ public class DriveSubsystem extends SubsystemBase {
       this::driveRobotRelative,
       new HolonomicPathFollowerConfig(
         new PIDConstants(1.7, 0, 0),
-        new PIDConstants(.5, .0, 0),/**was .211**/ 
+        new PIDConstants(.8, .0, 0),/**was .211**/ 
         2,
         0.77,
         new ReplanningConfig()
@@ -135,6 +155,19 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+        //updatePoseWithVision();
+
+    //   if(LimelightHelpers.getTA("limelight")<.4 && LimelightHelpers.getTX("limelight")!=0) {
+    //     if(LimelightHelpers.getFiducialID("limelight")==7) {
+    //       m_odometry.addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiBlue("limelight"), Timer.getFPGATimestamp()-LimelightHelpers.getLatency_Pipeline("limelight")-LimelightHelpers.getLatency_Capture("limelight"));
+    //     }
+
+    //     else if (LimelightHelpers.getFiducialID("limelight")==4) {
+    //       m_odometry.addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiRed("limelight"), Timer.getFPGATimestamp()-LimelightHelpers.getLatency_Pipeline("limelight")-LimelightHelpers.getLatency_Capture("limelight"));
+    //     }
+    // }
+
+
 
     SmartDashboard.putNumber("Gyro", -m_gyro.getAngle());
         SmartDashboard.putNumber("SwerveOdoGeo", this.getPose().getRotation().getDegrees());
@@ -150,7 +183,38 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
+    //return m_odometry.getEstimatedPosition();
   }
+
+  // public void updatePoseWithVision(){
+  //       // m_odometry.setVisionMeasurementStdDevs();
+  //       double[] vals =new double[7];
+
+  //       botpose.getDoubleArray(vals);
+        
+  //       double x = vals[0];
+  //       double y= vals[1];
+  //       double z = vals[2];
+  //       double yaw = vals[6];
+  //       double combinedLatency =vals[7];
+  //       double tagCount = vals[8];
+
+  //       Pose2d robotATPose = new Pose2d(new Translation2d(x,y), Rotation2d.fromDegrees(-m_gyro.getAngle()));
+  //       double realTime = Timer.getFPGATimestamp() - (combinedLatency/1000);//I think this is the time the values were published at maybe bc you substract the current time from the latency time
+
+  //      // double poseEstimate = m_odometry.getEstimatedPosition().getTranslation().getDistance(robotATPose.getTranslation());
+  //       double targetArea = limTable.getEntry("ta").getDouble(0);
+
+  //       double xystd = 0;
+  //       double degStds = 0;
+
+  //       //calculate sts 
+
+
+
+  //       //m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(xystd, xystd, Units.degreesToRadians(degStds)));
+  //     //m_odometry.addVisionMeasurement(robotATPose, realTime);
+  // }
 
   public Rotation2d getGyroAngle(){
     return Rotation2d.fromDegrees(-m_gyro.getAngle());
@@ -370,6 +434,13 @@ public class DriveSubsystem extends SubsystemBase {
       this.drive(0,0,0,false,false);
     });
   }
+  
+  // public boolean inYRange(boolean shoulderRaised){
+  //   boolean inFarShotZone = !shoulderRaised && Math.abs(tx.getDouble(0)-LimelightConstants.speakerAimTXFar)<LimelightConstants.kTolerance && Math.abs(LimelightConstants.speakerAimTYFar - ty.getDouble(0)) < 2;
+  //   boolean inCloseShotZone = shoulderRaised && Math.abs(tx.getDouble(0)-LimelightConstants.speakerAimTXClose)<LimelightConstants.kTolerance && Math.abs(LimelightConstants.speakerAimTYClose - ty.getDouble(0)) < LimelightConstants.kTolerance;
+  //   return inFarShotZone || inCloseShotZone;
+  // }
+ 
 
 
 }

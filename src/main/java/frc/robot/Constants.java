@@ -258,11 +258,19 @@ public final class Constants {
 
     //JOHN THIS ONE
     //for far indicators
-    public static double kTYInRangeFar = -7.7;
+    public static double kTYInRangeFar = -6;
+
+    public static double kForwardBackwardOffset = 1.25;
+
+
     public static double kTXInRangeFar = 0;
     public static double kFarInRangeTYTolerance = 2;
     public static double kFarInRangeTXTolerance = 3;
     public static final double kPRot = .02;
+
+
+    //The amount of time it takes to shoot if the note is at the beambreak sensor
+    public static double kShooterDelight = 300;
   }
 
   public static final class BassConstants {

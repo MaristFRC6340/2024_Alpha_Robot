@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -75,38 +76,38 @@ public class WaitUntilReadyCommand extends Command{
 	@Override
 	public boolean isFinished() {
 		
-		// if(tx.exists() && ty.exists()) {
-		// 	if(shoulderUp.getAsBoolean()) {
-		// 		if(currTY > LimelightConstants.kCloseForwardThreshold &&
-		// 				lastTY <LimelightConstants.kCloseForwardThreshold &&
-		// 				Math.abs(tx.getDouble(0)) < LimelightConstants.kCloseTXTolerance) 
-		// 		{
-		// 			return true;
-		// 		}
-		// 		else if (currTY < LimelightConstants.kCloseBackwardThreshold && 
-		// 				lastTY > LimelightConstants.kCloseBackwardThreshhold && 
-		// 				Math.abs(tx.getDouble(0))<LimelightConstants.kCloseTXTolerance)
-		// 				 {
-		// 			return true;
-		// 		}
-		// 	}
-		// 	else {
-		// 		if(currTY > LimelightConstants.kFarForwardThreshold &&
-		// 				lastTY <LimelightConstants.kFarForwardThreshold &&
-		// 				Math.abs(tx.getDouble(0)) < LimelightConstants.kFarTXTolerance)
-		// 		{
-		// 			return true;
-		// 		}
-		// 		else if (currTY < LimelightConstants.kFarBackwardThreshold && 
-		// 				lastTY > LimelightConstants.kFarBackwardThreshold && 
-		// 				Math.abs(tx.getDouble(0))<LimelightConstants.kFarTXTolerance)
-		// 				 {
-		// 			return true;
-		// 		}
-		// 	}
-		// 	lastTY = currTY;
-		// }
-		// return false;
+		// // if(tx.exists() && ty.exists()) {
+		// // 	if(shoulderUp.getAsBoolean()) {
+		// // 		if(currTY > LimelightConstants.kCloseForwardThreshold &&
+		// // 				lastTY <LimelightConstants.kCloseForwardThreshold &&
+		// // 				Math.abs(tx.getDouble(0)) < LimelightConstants.kCloseTXTolerance) 
+		// // 		{
+		// // 			return true;
+		// // 		}
+		// // 		else if (currTY < LimelightConstants.kCloseBackwardThreshold && 
+		// // 				lastTY > LimelightConstants.kCloseBackwardThreshhold && 
+		// // 				Math.abs(tx.getDouble(0))<LimelightConstants.kCloseTXTolerance)
+		// // 				 {
+		// // 			return true;
+		// // 		}
+		// // 	}
+		// // 	else {
+		// // 		if(currTY > LimelightConstants.kFarForwardThreshold &&
+		// // 				lastTY <LimelightConstants.kFarForwardThreshold &&
+		// // 				Math.abs(tx.getDouble(0)) < LimelightConstants.kFarTXTolerance)
+		// // 		{
+		// // 			return true;
+		// // 		}
+		// // 		else if (currTY < LimelightConstants.kFarBackwardThreshold && 
+		// // 				lastTY > LimelightConstants.kFarBackwardThreshold && 
+		// // 				Math.abs(tx.getDouble(0))<LimelightConstants.kFarTXTolerance)
+		// // 				 {
+		// // 			return true;
+		// // 		}
+		// // 	}
+		// // 	lastTY = currTY;
+		// // }
+		// // return false;
 	
 
 
@@ -117,7 +118,7 @@ public class WaitUntilReadyCommand extends Command{
 				if(lastTY > LimelightConstants.kTYInRangeFar && ty.getDouble(0) < LimelightConstants.kTYInRangeFar) {
 					return true;
 				}
-				else if(lastTY < LimelightConstants.kTYInRangeFar && ty.getDouble(0) > LimelightConstants.kTYInRangeFar) {
+				else if(lastTY < -11 && ty.getDouble(0) > -11) {
 					return true;
 				}
 				lastTY = currTY;
@@ -136,6 +137,9 @@ public class WaitUntilReadyCommand extends Command{
 		}
 		lastTY = currTY;
 		return false;
+
+		
+		//return tx.exists() && (!shoulderUp.getAsBoolean() && LimelightHelpers.getTY("limelight")<-6 && LimelightHelpers.getTY("limelight")>-11);
 	}
 
 	

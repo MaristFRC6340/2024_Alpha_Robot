@@ -34,7 +34,9 @@ import frc.robot.Commands.LaunchNoteCommand;
 import frc.robot.Commands.LowLatencyDriveTargetLockCommand;
 import frc.robot.Commands.LowLaunchNoteCommand;
 import frc.robot.Commands.OrthagonalizeCommand;
+import frc.robot.Commands.PIDDriveTargetLockCommand;
 import frc.robot.Commands.PointToAprilTagCommand;
+import frc.robot.Commands.ShootOnTheFlyCommand;
 import frc.robot.Commands.TransferToIndexerCommand;
 import frc.robot.Commands.WaitUntilReadyCommand;
 import frc.robot.Constants.AutoConstants;
@@ -379,6 +381,7 @@ public class RobotContainer {
 
     //actuatorX.whileTrue(new ParallelCommandGroup(m_ShooterSubsystem.getSetShooterPowerCommand(()->.2), m_IndexerSubsystem.getSetPowerCommand(()->.1)));
 
+
     actuatorX.onTrue(m_CelloSubsystem.getSetPositionCommand(0));
     //End of Actuator Controls
 
@@ -414,12 +417,13 @@ public class RobotContainer {
 
 
 
-    driverLTrigger.toggleOnTrue(new DriveTargetLockCommand(
-      m_robotDrive,
-     () -> m_driverController.getLeftX(),
-    () -> m_driverController.getLeftY(),
-    () -> m_driverController.getRightX(),
-    () -> speedControl));
+    driverLTrigger.toggleOnTrue(new SequentialCommandGroup(
+      new ShootOnTheFlyCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem, () -> {return speedControl;}, () -> {return m_driverController.getLeftX();}, () -> {return m_driverController.getLeftY();}, () -> {return m_driverController.getRightX();}),
+      m_IndexerSubsystem.getSetPowerCommand(.4).withTimeout(.5),
+      m_ShooterSubsystem.getStopShooterCommand()
+    ));
+
+    
 
 
 

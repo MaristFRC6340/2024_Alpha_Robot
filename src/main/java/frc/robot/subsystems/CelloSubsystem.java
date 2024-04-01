@@ -2,12 +2,14 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,14 +33,17 @@ public class CelloSubsystem extends SubsystemBase{
         celloMotor.setIdleMode(IdleMode.kBrake);
 
         relativeEncoder = celloMotor.getEncoder();
+
+        
         pidController = celloMotor.getPIDController();
+
+
+
+
 
         pidController.setP(.03);
         pidController.setI(0);
         pidController.setD(0);
-
-
-        pidController.setReference(0, ControlType.kPosition);
     }
 
     public void setPower(double power) {
@@ -61,7 +66,6 @@ public class CelloSubsystem extends SubsystemBase{
         return this.runEnd(() -> {
             celloMotor.set(powSupplier.getAsDouble());
         }, () -> {
-            celloMotor.set(0);
             pidController.setReference(relativeEncoder.getPosition(), ControlType.kPosition);
         });
     }

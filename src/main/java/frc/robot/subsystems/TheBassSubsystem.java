@@ -32,6 +32,8 @@ public class TheBassSubsystem extends SubsystemBase {
 
         theBassMotor.setIdleMode(IdleMode.kBrake);
 
+        theBassMotor.setInverted(true);
+
         bassEncoder = theBassMotor.getEncoder();
 
         bassPID = theBassMotor.getPIDController();

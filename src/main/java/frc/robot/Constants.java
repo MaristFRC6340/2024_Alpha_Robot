@@ -163,7 +163,7 @@ public final class Constants {
 
   public static final class IntakeConstants {
     public static final int kRollerID = 30;
-    public static double kDefaultIntakePower = .3;
+    public static double kDefaultIntakePower = .5;
     public static double kDefaultOuttakePower = -.7;
     public static double kSlowIntakePower = .2;
     public static double kSlowOuttakePower = -.2;
@@ -276,7 +276,7 @@ public final class Constants {
   public static final class BassConstants {
     public static final int kBassID = 31;
     public static double kP = .5;
-    public static double kGroundIntakePosition = 62.5;
+    public static double kGroundIntakePosition = 19.6; //Was around 60
     public static double kAmpOuttake = 8.5;
     public static double kRestPosition = 5.4;
     public static double kAmpTransferPosition = 13.5;

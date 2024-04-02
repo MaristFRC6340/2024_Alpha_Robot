@@ -25,12 +25,12 @@ public class ShootOnTheFlyCommand extends Command{
 
     private DoubleSupplier controlSupplier;
 
-    public ShootOnTheFlyCommand(IndexerSubsystem indexer, ShooterSubsystem shooter, PneumaticsSubsystem pneumatics, DoubleSupplier supplier, DoubleSupplier leftXSupplier, DoubleSupplier leftYSupplier, DoubleSupplier rightXSupplier) {
+    public ShootOnTheFlyCommand(IndexerSubsystem indexer, ShooterSubsystem shooter, PneumaticsSubsystem pneumatics, DriveSubsystem drive, DoubleSupplier supplier, DoubleSupplier leftXSupplier, DoubleSupplier leftYSupplier, DoubleSupplier rightXSupplier) {
         m_IndexerSubsystem = indexer;
         m_ShooterSubsystem = shooter;
         m_PneumaticsSubsystem = pneumatics;
-
-        addRequirements(indexer, shooter, pneumatics);
+        m_DriveSubsystem = drive;
+        addRequirements(indexer, shooter, pneumatics, drive);
 
         controlSupplier = supplier;
 
@@ -41,14 +41,14 @@ public class ShootOnTheFlyCommand extends Command{
 
     @Override
     public void initialize() {
-        m_ShooterSubsystem.getPrepareLaunchCommand();
+        m_ShooterSubsystem.prepareLaunch();
 
-        m_PneumaticsSubsystem.getDropShoulderCommand();
+        m_PneumaticsSubsystem.dropShoulder();
 
         m_IndexerSubsystem.stop();
     }
 
-    PIDController targetingPID = new PIDController(.01, .001, .001);
+    PIDController targetingPID = new PIDController(.02, 0, 0.0000001);
 
 
     @Override
@@ -61,7 +61,7 @@ public class ShootOnTheFlyCommand extends Command{
 
             double rotSpeed = targetingPID.calculate(LimelightHelpers.getTX("limelight"), 0);
 
-            m_DriveSubsystem.drive(-leftX*speedControl, -leftY*speedControl, -rotSpeed, true, false);
+            m_DriveSubsystem.drive(-leftX*speedControl, -leftY*speedControl, rotSpeed, true, false);
         }
         else {
             double leftX = leftXSupplier.getAsDouble();

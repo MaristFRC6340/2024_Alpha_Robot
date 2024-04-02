@@ -28,6 +28,7 @@ import frc.robot.Commands.DriveToCloseShotCommand;
 import frc.robot.Commands.DriveToFarShotCommand;
 import frc.robot.Commands.DriveToSourceCommand;
 import frc.robot.Commands.HighLaunchNoteCommand;
+import frc.robot.Commands.IntakeUntilIndexerCommand;
 import frc.robot.Commands.IntakeUntilNoteCommand;
 import frc.robot.Commands.LEDCommand;
 import frc.robot.Commands.LaunchNoteCommand;
@@ -137,6 +138,9 @@ public class RobotContainer {
   Trigger actuatorLeftX = new Trigger(() -> Math.abs(m_actuatorController.getLeftX()) > .1);
   Trigger actuatorRightY = new Trigger(() -> Math.abs(m_actuatorController.getRightY()) > .1);
   Trigger actuatorRightX = new Trigger(() -> Math.abs(m_actuatorController.getRightX()) > .1);
+
+  Trigger actuatorBack = new JoystickButton(m_actuatorController, XboxController.Button.kBack.value);
+  Trigger actuatorStart = new JoystickButton(m_actuatorController, XboxController.Button.kStart.value);
 
 
   Trigger actuatorLTrigger = new Trigger(() -> m_actuatorController.getLeftTriggerAxis()>OIConstants.kDriverLTriggerDeadband);
@@ -374,13 +378,7 @@ public class RobotContainer {
       m_IntakeSubsystem.getSlowOuttakeCommand()
     ));
 
-    //Shoot on the fly, doesn't work rn
-    // actuatorX.whileTrue(new WaitUntilReadyCommand(() -> m_PneumaticsSubsystem.getShoulderRaised(), m_robotDrive)
-    // .andThen(new InstantCommand(() -> m_IndexerSubsystem.setPower(.4)).withTimeout(.75))
-    // .handleInterrupt(() -> m_IndexerSubsystem.setPower(0)));
-
-    //actuatorX.whileTrue(new ParallelCommandGroup(m_ShooterSubsystem.getSetShooterPowerCommand(()->.2), m_IndexerSubsystem.getSetPowerCommand(()->.1)));
-
+    actuatorStart.whileTrue(new IntakeUntilIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem));
 
     actuatorX.onTrue(m_CelloSubsystem.getSetPositionCommand(0));
     //End of Actuator Controls
@@ -418,10 +416,11 @@ public class RobotContainer {
 
 
     driverLTrigger.toggleOnTrue(new SequentialCommandGroup(
-      new ShootOnTheFlyCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem, () -> {return speedControl;}, () -> {return m_driverController.getLeftX();}, () -> {return m_driverController.getLeftY();}, () -> {return m_driverController.getRightX();}),
+      new ShootOnTheFlyCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem, m_robotDrive, () -> {return speedControl;}, () -> {return m_driverController.getLeftX();}, () -> {return m_driverController.getLeftY();}, () -> {return m_driverController.getRightX();}),
       m_IndexerSubsystem.getSetPowerCommand(.4).withTimeout(.5),
       m_ShooterSubsystem.getStopShooterCommand()
     ));
+    //driverLTrigger.toggleOnTrue(new PIDDriveTargetLockCommand(m_robotDrive, () -> m_actuatorController.getLeftX(), () -> m_actuatorController.getLeftY(), () -> m_actuatorController.getRightX()));
 
     
 

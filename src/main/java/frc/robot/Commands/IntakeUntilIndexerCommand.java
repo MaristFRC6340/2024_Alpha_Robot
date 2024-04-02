@@ -18,8 +18,8 @@ public class IntakeUntilIndexerCommand extends Command{
 
     @Override
     public void initialize() {
-        m_IndexerSubsystem.getRunForwardCommand();
-        m_IntakeSubsystem.getIntakeCommand();
+        m_IndexerSubsystem.runForwards();
+        m_IntakeSubsystem.intake();
     }
 
     @Override

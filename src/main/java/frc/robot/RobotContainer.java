@@ -162,6 +162,7 @@ public class RobotContainer {
 
   Trigger green = new Trigger(()->!m_PneumaticsSubsystem.inShootingRange() && SmartDashboard.getBoolean("TargetLocked", false));
   Trigger greenFlashing = new Trigger(()->SmartDashboard.getBoolean("TargetLocked", false) && m_PneumaticsSubsystem.inShootingRange());
+  Trigger blueGoldFlashing = new Trigger(()->SmartDashboard.getBoolean("ShooterSpun", false));
   //Limelight stuff:
 
   NetworkTable limTable;
@@ -209,12 +210,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("TransferNote", new SequentialCommandGroup(m_TheBassSubsystem.getGoToTransferCommand(), new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(1.5), m_TheBassSubsystem.getDropTheBassCommand()));
 
 
-    NamedCommands.registerCommand("PickupAndTransfer", new SequentialCommandGroup(
-      new IntakeUntilNoteCommand(m_IntakeSubsystem, false),
-      m_TheBassSubsystem.daltonGoToTransferCommand(),
-      new WaitCommand(.5),
-      new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)
-    ).withTimeout(4));
+    // NamedCommands.registerCommand("PickupAndTransfer", new SequentialCommandGroup(
+    //   new IntakeUntilNoteCommand(m_IntakeSubsystem, false),
+    //   m_TheBassSubsystem.daltonGoToTransferCommand(),
+    //   new WaitCommand(.5),
+    //   new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)
+    // ).withTimeout(4));
+
+    NamedCommands.registerCommand("PickupAndTransfer", new IntakeUntilIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(5));
 
 
     NamedCommands.registerCommand("LaunchNoteKeepShooter", m_IndexerSubsystem.getRunForwardCommand().withTimeout(.4));
@@ -322,7 +325,7 @@ public class RobotContainer {
 
     //Moves the note from the intake to the shooter
     actuatorRTrigger.whileTrue(new ParallelCommandGroup(
-      new IntakeUntilNoteCommand(m_IntakeSubsystem, m_IntakeSubsystem.hasNote()),//maybe try non boolean suppliet
+      new IntakeUntilNoteCommand(m_IntakeSubsystem, () -> m_IntakeSubsystem.hasNote()),//maybe try non boolean suppliet
       m_IndexerSubsystem.getRunForwardCommand(),
       m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kOuttakeSpeed)
     ));
@@ -336,7 +339,7 @@ public class RobotContainer {
     actuatorB.whileTrue(new SequentialCommandGroup(
       m_TheBassSubsystem.getGoToAmpTransferPositonCommand(),
       m_CelloSubsystem.getSetPositionCommand(CelloConstants.kIntakeTransferPosition),
-      new WaitCommand(2),
+      new WaitCommand(1),
       new ParallelCommandGroup(
         m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed),
         m_IntakeSubsystem.getSlowOuttakeCommand()
@@ -351,14 +354,7 @@ public class RobotContainer {
     actuatorDpadUp.onTrue(m_TheBassSubsystem.daltonGoToRestCommand());
 
     //Sets the bass to transfer position and transfers to the indexer
-    actuatorDpadLeft.whileTrue(
-      new SequentialCommandGroup(
-        m_TheBassSubsystem.daltonGoToTransferCommand(),
-        new WaitCommand(.25),
-        new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)/** ,
-        m_TheBassSubsystem.getGoToAmpTransferPositonCommand()Remove match 63 Carrollton**/
-      )
-    );
+    actuatorDpadLeft.whileTrue(new IntakeUntilNoteCommand(m_IntakeSubsystem, () -> m_IntakeSubsystem.hasNote()));
 
     //Sets the bass to intaking height
     actuatorDpadDown.onTrue(
@@ -432,6 +428,7 @@ public class RobotContainer {
 
     greenFlashing.whileTrue( new LEDCommand(LEDConstants.flashingGreen(), leds));
     green.whileTrue(new LEDCommand(LEDConstants.green(), leds));
+    blueGoldFlashing.whileTrue(new LEDCommand(LEDConstants.blueGoldFlashing(), leds));
 
 
 

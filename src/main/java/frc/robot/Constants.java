@@ -270,17 +270,17 @@ public final class Constants {
 
 
     //The amount of time it takes to shoot if the note is at the beambreak sensor
-    public static double kShooterDelight = 300;
+    public static double kShooterDelight = 60;
   }
 
   public static final class BassConstants {
     public static final int kBassID = 31;
-    public static double kP = .5;
+    public static double kP = .1;
     public static double kGroundIntakePosition = 19.6; //Was around 60
     public static double kAmpOuttake = 8.5;
-    public static double kRestPosition = 5.4;
-    public static double kAmpTransferPosition = 13.5;
-    public static final double kTransferPose = 34;//was 36
+    public static double kRestPosition = 0;
+    public static double kAmpTransferPosition = 2; //Maybe 0
+    public static final double kTransferPose = 0;//was 36
     public static final double minPosition = 0;
   }
 
@@ -289,7 +289,7 @@ public final class Constants {
     public static final int kAmpTicklerID = 41;
     public static final double kTravelPosition = -16;//was -18
     public static final double kOuttakePosition = -10;
-    public static final double kIntakeTransferPosition = 11.000;
+    public static final double kIntakeTransferPosition = 11.45; //Maybe 9.76
     public static double kOuttakeSpeed = .8;
     public static double kSlowIntakeSpeed = -.3;
   }
@@ -311,7 +311,7 @@ public final class Constants {
 
     //note detected
     public static LEDPattern orange(){
-        LEDState state = new LEDState(stripLength).fill(new Color(255, 68, 51));
+        LEDState state = new LEDState(stripLength).fill(new Color(255, 165, 0));
         return new LEDPattern(0, new LEDState[]{state});
     }
     public static LEDPattern blue(){
@@ -321,6 +321,10 @@ public final class Constants {
     public static LEDPattern red(){
       LEDState state = new LEDState(stripLength).fill(new Color(255, 0, 0));
         return new LEDPattern(0, new LEDState[]{state});
+    }
+    public static LEDPattern blueGoldFlashing(){
+      LEDState state = new LEDState(stripLength).fillAlternating(new Color[]{new Color(0,0,255),new Color(255, 255,0)});
+      return LEDPattern.flashing(state, 100);
     }
     
 

@@ -3,57 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.441098689162071,
-        "y": 5.572628870811708
+        "x": 2.5,
+        "y": 5.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4006557335638972,
-        "y": 4.551129695651899
+        "x": 1.4701499981874826,
+        "y": 6.109967855733122
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.733284960072583,
-        "y": 4.0743007817018
+        "x": 2.8178887147104192,
+        "y": 6.933086337635106
       },
       "prevControl": {
-        "x": 1.7809460922331612,
-        "y": 4.0403626769439445
+        "x": 1.7624067078177794,
+        "y": 6.934630713048629
       },
       "nextControl": {
-        "x": 3.199039590588424,
-        "y": 4.090898686056754
+        "x": 3.185565093052663,
+        "y": 6.93254835559928
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.217351273793531,
-        "y": 4.0743007817018
+        "x": 2.2504113111753865,
+        "y": 6.933086337635106
       },
       "prevControl": {
-        "x": 2.5528463636817937,
-        "y": 4.059726114302024
+        "x": 2.836346479733113,
+        "y": 6.942711266805941
       },
       "nextControl": {
-        "x": 1.8818561839052679,
-        "y": 4.088875449101576
+        "x": 1.66447614261766,
+        "y": 6.923461408464271
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.441098689162071,
-        "y": 5.572628870811708
+        "x": 2.5,
+        "y": 5.534775147729212
       },
       "prevControl": {
-        "x": 1.5900889458875418,
-        "y": 4.884103720371862
+        "x": 1.5638829642171412,
+        "y": 5.771559973156364
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,9 +65,9 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.25,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -75,31 +75,15 @@
               "data": {
                 "name": "PickupAndTransfer"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "DropTheBass"
-              }
             }
           ]
-        }
-      }
-    },
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
         }
       }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 1.5,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -109,7 +93,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "States Four Note Paths",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

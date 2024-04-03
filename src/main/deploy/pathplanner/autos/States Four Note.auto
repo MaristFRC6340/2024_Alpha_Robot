@@ -1,0 +1,92 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.5,
+      "y": 5.5
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "HighLaunchNoteKeepShooterRunning"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.7
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropTheBass"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropShoulder"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchNoteKeepShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchNoteKeepShooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

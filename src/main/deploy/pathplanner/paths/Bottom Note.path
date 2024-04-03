@@ -3,57 +3,73 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.441098689162071,
-        "y": 5.572628870811708
+        "x": 2.5,
+        "y": 5.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4006557335638972,
-        "y": 4.551129695651899
+        "x": 1.8296745390080953,
+        "y": 5.152775090720963
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.733284960072583,
-        "y": 4.0743007817018
+        "x": 1.8937434052250803,
+        "y": 4.238637048484685
       },
       "prevControl": {
-        "x": 1.7809460922331612,
-        "y": 4.0403626769439445
+        "x": 2.0121230482975814,
+        "y": 4.4656895295235906
       },
       "nextControl": {
-        "x": 3.199039590588424,
-        "y": 4.090898686056754
+        "x": 1.7551963711559238,
+        "y": 3.972903456039929
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.217351273793531,
-        "y": 4.0743007817018
+        "x": 2.622787753531876,
+        "y": 4.11039905471273
       },
       "prevControl": {
-        "x": 2.5528463636817937,
-        "y": 4.059726114302024
+        "x": 2.007078338496073,
+        "y": 4.141492815727242
       },
       "nextControl": {
-        "x": 1.8818561839052679,
-        "y": 4.088875449101576
+        "x": 2.935501991529525,
+        "y": 4.094606764478596
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.441098689162071,
-        "y": 5.572628870811708
+        "x": 2.158549517893801,
+        "y": 4.11039905471273
       },
       "prevControl": {
-        "x": 1.5900889458875418,
-        "y": 4.884103720371862
+        "x": 2.957491891503135,
+        "y": 4.034731596431039
+      },
+      "nextControl": {
+        "x": 1.546788313626531,
+        "y": 4.168338672050993
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.5,
+        "y": 5.5
+      },
+      "prevControl": {
+        "x": 1.5927683618029849,
+        "y": 4.942385454093767
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,9 +81,9 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.4,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -75,31 +91,15 @@
               "data": {
                 "name": "PickupAndTransfer"
               }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "DropTheBass"
-              }
             }
           ]
-        }
-      }
-    },
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
         }
       }
     }
   ],
   "globalConstraints": {
     "maxVelocity": 1.0,
-    "maxAcceleration": 1.5,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -109,7 +109,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "States Four Note Paths",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

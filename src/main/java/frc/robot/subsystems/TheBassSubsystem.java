@@ -41,6 +41,8 @@ public class TheBassSubsystem extends SubsystemBase {
         bassPID.setP(BassConstants.kP);
                     SmartDashboard.putBoolean("RESET BASS ENCODER", false);
 
+        bassPID.setOutputRange(-1, .5);
+
     }
     
 

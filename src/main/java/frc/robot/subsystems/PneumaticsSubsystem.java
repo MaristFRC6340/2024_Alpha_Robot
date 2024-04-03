@@ -17,6 +17,7 @@ public class PneumaticsSubsystem extends SubsystemBase {
     private final DoubleSolenoid shoulderSolenoid;
 
     private PneumaticsControlModule m_PneumaticsControlModule;
+    
 
     private NetworkTable limTable;
     private NetworkTableEntry tx;
@@ -27,7 +28,7 @@ public class PneumaticsSubsystem extends SubsystemBase {
         hub = new PneumaticHub(1);
         m_PneumaticsControlModule = new PneumaticsControlModule(1);
         shoulderSolenoid = hub.makeDoubleSolenoid(PneumaticsConstants.kShoulderForwardChannelPort, PneumaticsConstants.kShoulderReverseChannelPort); 
-        
+        //shoulderSolenoid = new DoubleSolenoid(2,PneumaticsModuleType.CTREPCM,  PneumaticsConstants.kShoulderForwardChannelPort, PneumaticsConstants.kShoulderReverseChannelPort);
         limTable = NetworkTableInstance.getDefault().getTable("limelight");
         tx = limTable.getEntry("tx");
         ty = limTable.getEntry("ty");

@@ -50,7 +50,7 @@ public class ShootOnTheFlyCommand extends Command{
         m_IndexerSubsystem.stop();
     }
 
-    PIDController targetingPID = new PIDController(.03, 0, 0.000001);
+    PIDController targetingPID = new PIDController(.01, 0, 0.000001);
 
 
     @Override

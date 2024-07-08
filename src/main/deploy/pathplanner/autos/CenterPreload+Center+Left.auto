@@ -12,12 +12,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "DropTheBass"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -39,31 +33,37 @@
         {
           "type": "named",
           "data": {
+            "name": "DropTheBass"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intake Note Two Sensor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchNoteKeepShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intake Note One Sensor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "LaunchNoteKeepShooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "StopShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "IntakeNoteTwoShoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "LaunchNote"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "IntakeNoteOneShoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "LaunchNote"
           }
         }
       ]

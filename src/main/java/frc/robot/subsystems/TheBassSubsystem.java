@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.BassConstants;
 public class TheBassSubsystem extends SubsystemBase {
@@ -183,10 +184,14 @@ public class TheBassSubsystem extends SubsystemBase {
         });
     }
 
-    public Command getGoToAmpTransferPositonCommand() {
-        return this.runOnce(() -> {
-            goToPosition(BassConstants.kAmpTransferPosition);
-        });
+    // public Command getGoToAmpTransferPositonCommand() {
+    //     return this.runOnce(() -> {
+    //         goToPosition(BassConstants.kAmpTransferPosition);
+    //     });
+    // }
+
+    public Command getGoToAmpTransferPositionCommand() {
+        return new SequentialCommandGroup(this.startEnd(() -> goToPosition(0), () -> {}).until(() -> {return Math.abs(bassEncoder.getPosition())<1.2;}).withTimeout(1), this.runOnce(() -> goToPosition(BassConstants.kAmpTransferPosition)));
     }
 
 

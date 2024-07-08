@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7,
-        "y": 5.5
+        "x": 0.75,
+        "y": 6.68
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9422793086439623,
-        "y": 5.4927525124157155
+        "x": 1.8274190162097543,
+        "y": 6.654905903827746
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.828681314885649,
-        "y": 5.5
+        "x": 3.980682090486961,
+        "y": 6.68
       },
       "prevControl": {
-        "x": 2.7286813148856495,
-        "y": 5.5
+        "x": 2.539862360405103,
+        "y": 6.670946943507893
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": -120.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "States Four Note Paths",
+  "folder": "Playoffs AUto",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

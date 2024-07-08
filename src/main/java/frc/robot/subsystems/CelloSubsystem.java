@@ -37,13 +37,15 @@ public class CelloSubsystem extends SubsystemBase{
         
         pidController = celloMotor.getPIDController();
 
-
+        
 
 
 
         pidController.setP(.03);
         pidController.setI(0);
         pidController.setD(0);
+
+        pidController.setReference(0, ControlType.kPosition);
     }
 
     public void setPower(double power) {
@@ -58,7 +60,7 @@ public class CelloSubsystem extends SubsystemBase{
         return this.startEnd(() -> {
             celloMotor.set(power);
         }, () -> {
-            pidController.setReference(relativeEncoder.getPosition(), ControlType.kPosition);
+            setPower(0);
         });
     }
 
@@ -66,7 +68,7 @@ public class CelloSubsystem extends SubsystemBase{
         return this.runEnd(() -> {
             celloMotor.set(powSupplier.getAsDouble());
         }, () -> {
-            pidController.setReference(relativeEncoder.getPosition(), ControlType.kPosition);
+            setPower(0);
         });
     }
 

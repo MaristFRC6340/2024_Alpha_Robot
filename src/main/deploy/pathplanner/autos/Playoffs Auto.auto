@@ -2,50 +2,50 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5,
-      "y": 5.5
+      "x": 0.7513688733177841,
+      "y": 6.683496754619068
     },
-    "rotation": 180.0
+    "rotation": -120.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 2.0
+                  "name": "HighLaunchNote"
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "HighLaunchNoteKeepShooterRunning"
+                  "waitTime": 1.5
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "DropTheBass"
+            "waitTime": 9.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Intake Note Two Sensor"
+            "pathName": "Taxi from Side"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "LaunchNote"
+            "name": "StopShooter"
           }
         }
       ]

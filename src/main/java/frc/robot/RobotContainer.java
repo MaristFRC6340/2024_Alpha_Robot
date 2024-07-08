@@ -35,12 +35,14 @@ import frc.robot.Commands.LaunchNoteCommand;
 import frc.robot.Commands.LowLatencyDriveTargetLockCommand;
 import frc.robot.Commands.LowLaunchNoteCommand;
 import frc.robot.Commands.OrthagonalizeCommand;
+import frc.robot.Commands.PIDAimCommand;
 import frc.robot.Commands.PIDDriveTargetLockCommand;
 import frc.robot.Commands.PointToAprilTagCommand;
 import frc.robot.Commands.ShootOnTheFlyCommand;
 import frc.robot.Commands.TransferToIndexerCommand;
 import frc.robot.Commands.WaitUntilReadyCommand;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.BassConstants;
 import frc.robot.Constants.CelloConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
@@ -120,6 +122,7 @@ public class RobotContainer {
   Trigger driverLBumper = new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value);
   Trigger driverRBumper = new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value);
   Trigger driverLeftStickButton = new JoystickButton(m_driverController, XboxController.Button.kLeftStick.value);
+  Trigger driverRightStickButton = new JoystickButton(m_driverController, XboxController.Button.kRightStick.value);
   Trigger actuatorA = new JoystickButton(m_actuatorController, XboxController.Button.kA.value);
   Trigger actuatorB = new JoystickButton(m_actuatorController, XboxController.Button.kB.value);
   Trigger actuatorX = new JoystickButton(m_actuatorController, XboxController.Button.kX.value);
@@ -160,8 +163,8 @@ public class RobotContainer {
 
   Trigger targetLocked = new Trigger(()-> SmartDashboard.getBoolean("TargetLocked", false));
 
-  Trigger green = new Trigger(()->!m_PneumaticsSubsystem.inShootingRange() && SmartDashboard.getBoolean("TargetLocked", false));
-  Trigger greenFlashing = new Trigger(()->SmartDashboard.getBoolean("TargetLocked", false) && m_PneumaticsSubsystem.inShootingRange());
+  Trigger green = new Trigger(()->!m_PneumaticsSubsystem.inShootingRange() && SmartDashboard.getBoolean("TargetLocked", false) && !SmartDashboard.getBoolean("ShooterSpun", false));
+  Trigger greenFlashing = new Trigger(()->SmartDashboard.getBoolean("TargetLocked", false) && m_PneumaticsSubsystem.inShootingRange() && !SmartDashboard.getBoolean("ShooterSpun", false));
   Trigger blueGoldFlashing = new Trigger(()->SmartDashboard.getBoolean("ShooterSpun", false));
   //Limelight stuff:
 
@@ -217,10 +220,13 @@ public class RobotContainer {
     //   new TransferToIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem)
     // ).withTimeout(4));
 
-    NamedCommands.registerCommand("PickupAndTransfer", new IntakeUntilIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(5));
+    NamedCommands.registerCommand("PickupAndTransfer", new IntakeUntilIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(3));
+    NamedCommands.registerCommand("LongPickupAndTransfer", new IntakeUntilIndexerCommand(m_IndexerSubsystem, m_IntakeSubsystem).withTimeout(5));
 
 
     NamedCommands.registerCommand("LaunchNoteKeepShooter", m_IndexerSubsystem.getRunForwardCommand().withTimeout(.4));
+
+    NamedCommands.registerCommand("Aim", new AimAndDriveFarCommand(m_robotDrive).withTimeout(1));
     autoChooser = AutoBuilder.buildAutoChooser("default");
     SmartDashboard.putData("Auto Chooser", autoChooser);
      
@@ -336,19 +342,34 @@ public class RobotContainer {
     ));
 
     //Sets the amp to the transfer position and the intake to the amp transfer position, then transfers.
-    actuatorB.whileTrue(new SequentialCommandGroup(
-      m_TheBassSubsystem.getGoToAmpTransferPositonCommand(),
+    // actuatorB.whileTrue(new SequentialCommandGroup(
+    //   m_TheBassSubsystem.getGoToAmpTransferPositionCommand(),
+    //   m_CelloSubsystem.getSetPositionCommand(CelloConstants.kIntakeTransferPosition),
+    //   new WaitCommand(1),
+    //   new ParallelCommandGroup(
+    //     m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed),
+    //     m_IntakeSubsystem.getSlowOuttakeCommand()
+    //   )));
+
+    actuatorBack.whileTrue(new SequentialCommandGroup(
       m_CelloSubsystem.getSetPositionCommand(CelloConstants.kIntakeTransferPosition),
-      new WaitCommand(1),
-      new ParallelCommandGroup(
-        m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed),
-        m_IntakeSubsystem.getSlowOuttakeCommand()
-      )));
+      m_IntakeSubsystem.getSlowOuttakeCommand().withTimeout(.5),
+      new ParallelCommandGroup(m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed),
+      new SequentialCommandGroup(new InstantCommand(() -> m_TheBassSubsystem.goToPosition(-1.3), m_TheBassSubsystem), new WaitCommand(.5), m_IntakeSubsystem.getSlowOuttakeCommand()))
+    ));
 
     //Sets the amp to short mode for field traversal
     actuatorA.onTrue(m_CelloSubsystem.getSetPositionCommand(CelloConstants.kTravelPosition));
 
 
+    actuatorB.whileTrue(new SequentialCommandGroup(
+      m_TheBassSubsystem.getGoToPositionCommand(0).withTimeout(.2),
+    new ParallelCommandGroup(
+      m_CelloSubsystem.getSetPositionCommand(CelloConstants.kIntakeTransferPosition+1.2),
+       m_AmpTicklerSubsystem.getSetSpeedCommand(CelloConstants.kSlowIntakeSpeed),
+        new SequentialCommandGroup(new WaitCommand(.5),m_IntakeSubsystem.getSlowOuttakeCommand().withTimeout(.1),
+         new InstantCommand(() -> m_TheBassSubsystem.goToPosition(4), m_TheBassSubsystem),
+          new WaitCommand(.5), m_IntakeSubsystem.getSlowOuttakeCommand()))));
 
     //Sets the bass to travelling/up/rest position
     actuatorDpadUp.onTrue(m_TheBassSubsystem.daltonGoToRestCommand());
@@ -394,6 +415,8 @@ public class RobotContainer {
       new DriveToCloseShotCommand(m_robotDrive)
     ));
 
+    
+
 
     //Angles towards april tag and slides forward/backwards to far shot. Beautiful and desireable command.
 
@@ -403,7 +426,7 @@ public class RobotContainer {
     driverY.whileTrue(new SequentialCommandGroup(m_PneumaticsSubsystem.getDropShoulderCommand(),new DriveToFarShotCommand(m_robotDrive)));
 
 
-    driverX.whileTrue(m_robotDrive.getSetXCommand());
+    driverRightStickButton.whileTrue(m_robotDrive.getSetXCommand());
     driverA.whileTrue(new PointToAprilTagCommand(m_robotDrive));
 
 
@@ -411,12 +434,12 @@ public class RobotContainer {
 
 
 
-    driverLTrigger.toggleOnTrue(new SequentialCommandGroup(
-      new ShootOnTheFlyCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem, m_robotDrive, () -> {return speedControl;}, () -> {return m_driverController.getLeftX();}, () -> {return m_driverController.getLeftY();}, () -> {return m_driverController.getRightX();}),
-      m_IndexerSubsystem.getSetPowerCommand(.4).withTimeout(.5),
-      m_ShooterSubsystem.getStopShooterCommand()
-    ));
-    //driverLTrigger.toggleOnTrue(new PIDDriveTargetLockCommand(m_robotDrive, () -> m_actuatorController.getLeftX(), () -> m_actuatorController.getLeftY(), () -> m_actuatorController.getRightX()));
+    // driverLTrigger.toggleOnTrue(new SequentialCommandGroup(
+    //   new ShootOnTheFlyCommand(m_IndexerSubsystem, m_ShooterSubsystem, m_PneumaticsSubsystem, m_robotDrive, () -> {return speedControl;}, () -> {return m_driverController.getLeftX();}, () -> {return m_driverController.getLeftY();}, () -> {return m_driverController.getRightX();}),
+    //   m_IndexerSubsystem.getSetPowerCommand(.4).withTimeout(.5),
+    //   m_ShooterSubsystem.getStopShooterCommand()
+    // ));
+    driverLTrigger.toggleOnTrue(new PIDDriveTargetLockCommand(m_robotDrive, () -> m_actuatorController.getLeftX(), () -> m_actuatorController.getLeftY(), () -> m_actuatorController.getRightX()));
 
     
 

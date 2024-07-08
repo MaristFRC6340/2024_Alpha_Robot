@@ -3,57 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.15,
-        "y": 5.5
+        "x": 1.9968710265542626,
+        "y": 5.535780193598729
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.02531220964062,
-        "y": 4.875495104398295
+        "x": 1.9846769582709496,
+        "y": 5.229124023558571
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.697326401958131,
-        "y": 3.9353745983492945
+        "x": 2.562228481884652,
+        "y": 4.098770043047026
       },
       "prevControl": {
-        "x": 2.0816169869223278,
-        "y": 3.966468359363807
+        "x": 1.5173770199187324,
+        "y": 4.127828024467056
       },
       "nextControl": {
-        "x": 3.01004063995578,
-        "y": 3.9195823081151606
+        "x": 3.1877583638532005,
+        "y": 4.081373660547149
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.194971538863773,
-        "y": 4.3055957881993425
+        "x": 2.562228481884652,
+        "y": 4.741736869904752
       },
       "prevControl": {
-        "x": 2.960026838371199,
-        "y": 4.263751927859604
-      },
-      "nextControl": {
-        "x": 1.7298815944801142,
-        "y": 4.331033372503034
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.1,
-        "y": 5.5
-      },
-      "prevControl": {
-        "x": 1.726778094691269,
-        "y": 5.033801095971914
+        "x": 2.929974802620882,
+        "y": 4.85309114470826
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,7 +49,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -73,7 +57,13 @@
             {
               "type": "named",
               "data": {
-                "name": "PickupAndTransfer"
+                "name": "DropShoulder"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "LongPickupAndTransfer"
               }
             }
           ]
@@ -82,8 +72,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 0.75,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

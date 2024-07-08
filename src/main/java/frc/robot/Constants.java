@@ -157,13 +157,13 @@ public final class Constants {
     public static final int kUpperShooterID = 21;
     public static double kDefaultLaunchPower = .7; // WOrks from safe zone
     public static double kDefaultIntakePower = -.1;
-    public static double prepareLaunchDelay = 1;
+    public static double prepareLaunchDelay = .7;
     public static double shootToRestDelay = 1;
   }
 
   public static final class IntakeConstants {
     public static final int kRollerID = 30;
-    public static double kDefaultIntakePower = .5;
+    public static double kDefaultIntakePower = 1;
     public static double kDefaultOuttakePower = -.7;
     public static double kSlowIntakePower = .2;
     public static double kSlowOuttakePower = -.2;
@@ -289,7 +289,7 @@ public final class Constants {
     public static final int kAmpTicklerID = 41;
     public static final double kTravelPosition = -16;//was -18
     public static final double kOuttakePosition = -10;
-    public static final double kIntakeTransferPosition = 11.45; //Maybe 9.76
+    public static final double kIntakeTransferPosition = 9.76; //Maybe 9.76
     public static double kOuttakeSpeed = .8;
     public static double kSlowIntakeSpeed = -.3;
   }

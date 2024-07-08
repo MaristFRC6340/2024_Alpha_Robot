@@ -68,6 +68,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "RaiseShoulder"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Top Note"
@@ -80,9 +86,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "Bottom Note"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Second Note To Final"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
           }
         },
         {
